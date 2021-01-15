@@ -20,16 +20,16 @@ http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8
 JDM3U8BaseDownloader中默认取多码率文件内容中的第三行
 （自己可重写public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList)方法）
 
-多码率中第三行内容（即单码率的m3u8的路径）
+多码率中第三行内容（即单码率的m3u8的路径）<br/>
 如果是以/开头的话，使用多码率的下载地址url主机加该内容；（即http://yi.jingdianzuida.com拼接上/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8）
-所以该http://yi.jingdianzuida.com/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8
+所以该http://yi.jingdianzuida.com/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8<br/>
 
 如果不是以/开头的话，截取多码率的url到最后一个/杠，再加多码率中第三行内容
 
-从指定码率文件取出每个ts文件下载地址也是同样的规则：
-// 在单码率m3u8文件ts列表的ts文件下载地址
-// 如果是以/开头的话，使用单码率的下载地址url主机加该下载地址
-// 如果不是以/开头的话，截取单码率的url到最后一个/杠,再加该下载地址
+从指定码率文件取出每个ts文件下载地址也是同样的规则：<br/>
+// 在单码率m3u8文件ts列表的ts文件下载地址<br/>
+// 如果是以/开头的话，使用单码率的下载地址url主机加该下载地址<br/>
+// 如果不是以/开头的话，截取单码率的url到最后一个/杠,再加该下载地址<br/>
 ~~~~~
 #EXTM3U
 #EXT-X-VERSION:3
@@ -40,11 +40,11 @@ JDM3U8BaseDownloader中默认取多码率文件内容中的第三行
 ~~~~~
 
 #### （注意）由于我这里的存储方式是：
-将这些ts文件存放在单码率文件同一级别目录下
-比如视频的id为1，第2集，那ts文件存储位置就为MOVIE_DIR/1/2/RYHJh4414000.ts,
-m3u8文件存储位置为MOVIE_DIR/1/2/2.m3u8,
-此时如果把所有ts文件下载成功直接使用MOVIE_DIR/1/2/2.m3u8这个路径去播放，是不可播放的，
-因为ts文件的路径为/20190905/yM4FKbnk/1000kb/hls/RYHJh4414000.ts。
-我现在的解决方式：copy一份2.m3u8命名为2_local.m3u8，然后将/20190905/yM4FKbnk/1000kb/hls/前缀替换为空字符，只剩RYHJh4414000.ts
-这样就能索引到ts文件，使用2_local.m3u8这个路径去播放就能达到正常播放的效果。
+将这些ts文件存放在单码率文件同一级别目录下<br/>
+比如视频的id为1，第2集，那ts文件存储位置就为MOVIE_DIR/1/2/RYHJh4414000.ts,<br/>
+m3u8文件存储位置为MOVIE_DIR/1/2/2.m3u8,<br/>
+此时如果把所有ts文件下载成功直接使用MOVIE_DIR/1/2/2.m3u8这个路径去播放，是不可播放的，<br/>
+因为ts文件的路径为/20190905/yM4FKbnk/1000kb/hls/RYHJh4414000.ts。<br/>
+我现在的解决方式：copy一份2.m3u8命名为2_local.m3u8，然后将/20190905/yM4FKbnk/1000kb/hls/前缀替换为空字符，只剩RYHJh4414000.ts<br/>
+这样就能索引到ts文件，使用2_local.m3u8这个路径去播放就能达到正常播放的效果。<br/>
 
