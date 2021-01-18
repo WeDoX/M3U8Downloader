@@ -1,4 +1,4 @@
-# M3U8Downloader
+# M3U8Downloader [![](https://jitpack.io/v/WeDox/M3U8Downloader.svg)](https://jitpack.io/#WeDox/M3U8Downloader)
 m3u8视频文件下载器（生成支持供本地播放的m3u8文件）
 
 ### 下载流程，可归纳为以下六个步骤：
