@@ -1,5 +1,76 @@
 # M3U8Downloader [![](https://jitpack.io/v/WeDox/M3U8Downloader.svg)](https://jitpack.io/#WeDox/M3U8Downloader)
 m3u8视频文件下载器（生成支持供本地播放的m3u8文件）
+#### How to use?
+Step 0.Add it in your root build.gradle at the end of repositories:
+~~~~~~~~~
+allprojects {
+		repositories {
+			...
+			maven { url 'https://jitpack.io' }
+		}
+	}
+~~~~~~~~~
+Step 1. Add the dependency
+~~~~~~~~~
+dependencies {
+	        implementation 'com.github.WeDox:M3U8Downloader:1.0.0'
+	}
+~~~~~~~~~
+Step 2.to use
+~~~~~~~~~
+//需要权限：
+
+   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+private void startDownloadM3U8() {
+        JDDownloadQueue downloadQueue = new JDDownloadQueue();
+        downloadQueue.setMovie_id(10);
+        downloadQueue.setSingleRate(false);//多码率
+        downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");//多码率地址
+        downloadQueue.setMovie_title("摩羯阿婆");
+        downloadQueue.setMovie_num_index(1);
+        downloadQueue.setMovie_num_title("第一集");
+        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要，代表可以开始或停止下载ts文件列表
+
+        String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
+
+        //
+        JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
+                .targetDir(PATH_MOVIE)
+                .DownloadQueue(downloadQueue)
+                .GetM3U8FileListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
+                    @Override
+                    public void downloadErrorEvent(JDDownloadMessage message) {
+                        JDM3U8LogHelper.printLog(message.message);
+                    }
+
+                    @Override
+                    public void postEvent(JDDownloadProgress progress) {
+                        JDM3U8LogHelper.printLog("进度" + progress.toString());
+                    }
+
+                    @Override
+                    public void downloadSuccessEvent(JDDownloadQueue downloadQueue) {
+                        JDM3U8LogHelper.printLog("下载成功事件：" + downloadQueue.getMovie_title());
+                    }
+
+                    @Override
+                    public void removeDownloadQueueEvent(JDDownloadQueue downloadQueue) {
+                        JDM3U8LogHelper.printLog("移除下载" + downloadQueue.getMovie_title());
+                    }
+
+                    @Override
+                    public void pauseDownload(JDDownloadQueue downloadQueue) {
+                        JDM3U8LogHelper.printLog("暂停下载" + downloadQueue.getMovie_title());
+                    }
+                })
+                .build();
+        jdm3U8Downloader.startDownload();
+    }
+~~~~~~~~~
+
 
 ### 下载流程，可归纳为以下六个步骤：
 0、网络请求获取到m3u8多码率的文件内容<br/>
