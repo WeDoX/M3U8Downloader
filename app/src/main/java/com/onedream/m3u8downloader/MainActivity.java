@@ -5,13 +5,14 @@ import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.onedream.m3u8downloader.bean.JDDownloadMessage;
-import com.onedream.m3u8downloader.bean.JDDownloadProgress;
-import com.onedream.m3u8downloader.bean.JDDownloadQueue;
-import com.onedream.m3u8downloader.common.JDDownloadQueueState;
-import com.onedream.m3u8downloader.listener.JDM3U8DownloaderContract;
-import com.onedream.m3u8downloader.utils.JDM3U8FileCacheUtils;
-import com.onedream.m3u8downloader.utils.JDM3U8LogHelper;
+import com.onedream.jdm3u8downloader.JDM3U8Downloader;
+import com.onedream.jdm3u8downloader.bean.JDDownloadMessage;
+import com.onedream.jdm3u8downloader.bean.JDDownloadProgress;
+import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
+import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
+import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
+import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 
 import java.io.File;
 
@@ -22,6 +23,20 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         //
+        initView();
+        initData();
+        initEvent();
+    }
+
+    private void initView() {
+
+    }
+
+    private void initData() {
+
+    }
+
+    private void initEvent() {
         findViewById(R.id.btn).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -34,11 +49,12 @@ public class MainActivity extends AppCompatActivity {
     private void startDownloadM3U8() {
         JDDownloadQueue downloadQueue = new JDDownloadQueue();
         downloadQueue.setMovie_id(10);
+        downloadQueue.setSingleRate(false);
         downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");
         downloadQueue.setMovie_title("摩羯阿婆");
         downloadQueue.setMovie_num_index(1);
         downloadQueue.setMovie_num_title("第一集");
-        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);
+        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较终于要
 
         String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
 
