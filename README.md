@@ -40,6 +40,7 @@ private void startDownloadM3U8() {
         JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
                 .targetDir(PATH_MOVIE)
                 .DownloadQueue(downloadQueue)
+                //.AbstractDownloader(new OkHttpDownloader())//可自定义m3u8相关文件下载器
                 .GetM3U8FileListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
                     @Override
                     public void downloadErrorEvent(JDDownloadMessage message) {
