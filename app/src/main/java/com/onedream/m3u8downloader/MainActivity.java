@@ -13,6 +13,7 @@ import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
+import com.onedream.m3u8downloader.okhttp_downloader.OkHttpDownloader;
 
 import java.io.File;
 
@@ -62,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
         JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
                 .targetDir(PATH_MOVIE)
                 .DownloadQueue(downloadQueue)
+                .AbstractDownloader(new OkHttpDownloader())
                 .GetM3U8FileListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
                     @Override
                     public void downloadErrorEvent(JDDownloadMessage message) {

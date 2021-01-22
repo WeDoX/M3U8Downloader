@@ -1,4 +1,4 @@
-package com.onedream.jdm3u8downloader.listener;
+package com.onedream.m3u8downloader.okhttp_downloader;
 
 
 import com.onedream.jdm3u8downloader.utils.JDM3U8CloseUtils;
@@ -16,11 +16,11 @@ import okhttp3.Response;
  * @author jdallen
  * @since 2020/4/3
  */
-public abstract class JDM3U8DownloaderFileCallBack extends Callback<File> {
+public abstract class OkHttpDownloaderFileCallBack extends Callback<File> {
 
     private File file;
 
-    public JDM3U8DownloaderFileCallBack(File file) {
+    public OkHttpDownloaderFileCallBack(File file) {
         this.file = file;
     }
 
