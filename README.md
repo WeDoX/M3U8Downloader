@@ -13,7 +13,7 @@ allprojects {
 Step 1. Add the dependency
 ~~~~~~~~~
 dependencies {
-	        implementation 'com.github.WeDox:M3U8Downloader:1.0.0'
+	        implementation 'com.github.WeDox:M3U8Downloader:1.1.0'
 	}
 ~~~~~~~~~
 Step 2.to use
