@@ -88,7 +88,7 @@ public class JDM3U8FileCacheUtils {
             cacheRootPath = context.getExternalFilesDir("").getPath();
         } else {
             // /data/data/<application package>/files
-            cacheRootPath = context.getExternalFilesDir("").getPath();
+            cacheRootPath = context.getFilesDir().getPath();
         }
         return cacheRootPath;
     }

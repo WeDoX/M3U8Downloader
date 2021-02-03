@@ -5,7 +5,6 @@ import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
 
-import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloader;
 import com.onedream.jdm3u8downloader.base.JDM3U8BaseDownloader;
 import com.onedream.jdm3u8downloader.bean.JDDownloadMessage;
 import com.onedream.jdm3u8downloader.bean.JDDownloadProgress;
@@ -14,7 +13,9 @@ import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
 import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
-import com.onedream.jdm3u8downloader.downloader.JDM3U8OriginalDownloader;
+import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloader;
+import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloaderFactory;
+import com.onedream.jdm3u8downloader.downloader.JDM3U8OriginalDownloaderFactory;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
@@ -37,43 +38,89 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
         private JDDownloadQueue downloadQueue;
         private JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener;
         private String targetDir;
-        private JDM3U8AbstractDownloader abstractDownloader;
+        private JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory;
 
         public Builder() {
 
         }
 
+        /**
+         * @deprecated use method setDownloadQueue to code
+         * {@link Builder setDownloadQueue(JDDownloadQueue downloadQueue)}
+         */
+        @Deprecated
         public Builder DownloadQueue(JDDownloadQueue downloadQueue) {
             this.downloadQueue = downloadQueue;
             return this;
         }
 
+        public Builder setDownloadQueue(JDDownloadQueue downloadQueue) {
+            this.downloadQueue = downloadQueue;
+            return this;
+        }
+
+        /**
+         * @deprecated use method setSaveDir to code
+         * {@link Builder setSaveDir(String saveDir)}
+         */
+        @Deprecated
         public Builder targetDir(String targetDir) {
             this.targetDir = targetDir;
             return this;
         }
 
+        public Builder setSaveDir(String saveDir) {
+            this.targetDir = saveDir;
+            return this;
+        }
+
+
+        /**
+         * @deprecated use method setDownloaderListener to code
+         * {@link Builder setDownloaderListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener)}
+         */
+        @Deprecated
         public Builder GetM3U8FileListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener) {
             this.getM3U8FileListener = getM3U8FileListener;
             return this;
         }
 
-        public Builder AbstractDownloader(JDM3U8AbstractDownloader abstractDownloader) {
-            this.abstractDownloader = abstractDownloader;
+        public Builder setDownloaderListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener) {
+            this.getM3U8FileListener = getM3U8FileListener;
             return this;
         }
 
 
+        /**
+         * @deprecated use method setDownloaderFactory to code
+         * {@link Builder setDownloaderFactory(JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory)}
+         */
+        @Deprecated
+        public Builder AbstractDownloader(final JDM3U8AbstractDownloader abstractDownloader) {
+            this.jdm3U8AbstractDownloaderFactory = new JDM3U8AbstractDownloaderFactory() {
+                @Override
+                public JDM3U8AbstractDownloader createDownloader() {
+                    return abstractDownloader;
+                }
+            };
+            return this;
+        }
+
+        public Builder setDownloaderFactory(JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory) {
+            this.jdm3U8AbstractDownloaderFactory = jdm3U8AbstractDownloaderFactory;
+            return this;
+        }
+
         public JDM3U8Downloader build() {
-            if (null == abstractDownloader) {
-                abstractDownloader = new JDM3U8OriginalDownloader();
+            if (null == jdm3U8AbstractDownloaderFactory) {
+                jdm3U8AbstractDownloaderFactory = JDM3U8OriginalDownloaderFactory.create();
             }
-            return new JDM3U8Downloader(targetDir, downloadQueue, getM3U8FileListener, abstractDownloader);
+            return new JDM3U8Downloader(targetDir, downloadQueue, getM3U8FileListener, jdm3U8AbstractDownloaderFactory.createDownloader());
         }
     }
 
 
-    JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue, @NonNull JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener, JDM3U8AbstractDownloader abstractDownloader) {
+    private JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue, @NonNull JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener, JDM3U8AbstractDownloader abstractDownloader) {
         this.targetDir = targetDir;
         this.downloadQueue = downloadQueue;
         this.getM3U8FileListener = getM3U8FileListener;

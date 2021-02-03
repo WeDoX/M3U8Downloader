@@ -14,6 +14,7 @@ import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 import com.onedream.m3u8downloader.okhttp_downloader.OkHttpDownloader;
+import com.onedream.m3u8downloader.okhttp_downloader.OkHttpDownloaderFactory;
 
 import java.io.File;
 
@@ -55,16 +56,19 @@ public class MainActivity extends AppCompatActivity {
         downloadQueue.setMovie_title("摩羯阿婆");
         downloadQueue.setMovie_num_index(1);
         downloadQueue.setMovie_num_title("第一集");
-        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较终于要
+        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要
 
         String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
-
         //
         JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
-                .targetDir(PATH_MOVIE)
-                .DownloadQueue(downloadQueue)
-                .AbstractDownloader(new OkHttpDownloader())
-                .GetM3U8FileListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
+               // .targetDir(PATH_MOVIE)
+                .setSaveDir(PATH_MOVIE)
+               // .DownloadQueue(downloadQueue)
+                .setDownloadQueue(downloadQueue)
+               // .AbstractDownloader(new OkHttpDownloader())
+                .setDownloaderFactory(OkHttpDownloaderFactory.create())
+                //.GetM3U8FileListener()
+                .setDownloaderListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
                     @Override
                     public void downloadErrorEvent(JDDownloadMessage message) {
                         JDM3U8LogHelper.printLog(message.message);
