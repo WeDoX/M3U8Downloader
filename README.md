@@ -78,6 +78,10 @@ private void startDownloadM3U8() {
     }
 ~~~~~~~~~
 
+Step 3.Custom your file downloader(自定义文件下载器)
+
+参考工程中的okhttp_file_downloader目录下的Okhttp文件下载器
+
 
 ### 下载流程，可归纳为以下六个步骤：
 0、网络请求获取到m3u8多码率的文件内容<br/>
