@@ -9,33 +9,17 @@ import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
  * @since 2020/4/3
  */
 public class JDDownloadQueue {
-    private boolean isSingleRate = true;//默认为但码率的
-    private long movie_id;
-    private int movie_num_index;
-    private String movie_title;
-    private String movie_num_title;
-    private long sofar;
-    private long total;
-    private String movie_download_url;
-    private String movie_fengmiantu;
+    private long movie_id;//电影或电视剧id
+    private int movie_num_index;//集数id(电影的集数id为0、电视剧的集数id为1、2、3.....）
+    private String movie_title;//电影或电视剧名称
+    private String movie_num_title;//集数名称
+    private String movie_download_url;//下载地址
+    private boolean isSingleRate = true;//下载地址是否是单码率地址，默认为单码率地址
+    private String movie_cover;//封面图片
     private int state = JDDownloadQueueState.STATE_DOWNLOAD_NO;
-    //
-    private boolean isNeedStopIsExits = false;//是否需要停止
 
 
     public JDDownloadQueue() {
-    }
-
-    public JDDownloadQueue(long movie_id, int movie_num_index, String movie_title, String movie_num_title, long sofar, long total, String movie_download_url, String movie_fengmiantu, int state) {
-        this.movie_id = movie_id;
-        this.movie_num_index = movie_num_index;
-        this.movie_title = movie_title;
-        this.movie_num_title = movie_num_title;
-        this.sofar = sofar;
-        this.total = total;
-        this.movie_download_url = movie_download_url;
-        this.movie_fengmiantu = movie_fengmiantu;
-        this.state = state;
     }
 
     public boolean isSingleRate() {
@@ -78,22 +62,6 @@ public class JDDownloadQueue {
         this.movie_num_title = movie_num_title;
     }
 
-    public long getSofar() {
-        return sofar;
-    }
-
-    public void setSofar(long sofar) {
-        this.sofar = sofar;
-    }
-
-    public long getTotal() {
-        return total;
-    }
-
-    public void setTotal(long total) {
-        this.total = total;
-    }
-
     public String getMovie_download_url() {
         return movie_download_url;
     }
@@ -102,12 +70,12 @@ public class JDDownloadQueue {
         this.movie_download_url = movie_download_url;
     }
 
-    public String getMovie_fengmiantu() {
-        return movie_fengmiantu;
+    public String getMovie_cover() {
+        return movie_cover;
     }
 
-    public void setMovie_fengmiantu(String movie_fengmiantu) {
-        this.movie_fengmiantu = movie_fengmiantu;
+    public void setMovie_cover(String movie_cover) {
+        this.movie_cover = movie_cover;
     }
 
     public int getState() {
@@ -118,11 +86,17 @@ public class JDDownloadQueue {
         this.state = state;
     }
 
-    public boolean isNeedStopIsExits() {
-        return isNeedStopIsExits;
-    }
-
-    public void setNeedStopIsExits(boolean needStopIsExits) {
-        isNeedStopIsExits = needStopIsExits;
+    @Override
+    public String toString() {
+        return "JDDownloadQueue{" +
+                "movie_id=" + movie_id +
+                ", movie_num_index=" + movie_num_index +
+                ", movie_title='" + movie_title + '\'' +
+                ", movie_num_title='" + movie_num_title + '\'' +
+                ", movie_download_url='" + movie_download_url + '\'' +
+                ", isSingleRate=" + isSingleRate +
+                ", movie_cover='" + movie_cover + '\'' +
+                ", state=" + state +
+                '}';
     }
 }

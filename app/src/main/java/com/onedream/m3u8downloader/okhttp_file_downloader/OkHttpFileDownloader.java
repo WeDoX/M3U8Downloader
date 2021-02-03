@@ -1,13 +1,13 @@
-package com.onedream.m3u8downloader.okhttp_downloader;
+package com.onedream.m3u8downloader.okhttp_file_downloader;
 
 import android.os.ConditionVariable;
 
 import androidx.annotation.NonNull;
 
-import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloader;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDM3U8DownloadHintMessage;
 import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
@@ -23,10 +23,12 @@ import okhttp3.Call;
 import okhttp3.Request;
 
 /**
+ * OkHttp文件下载器
+ *
  * @author jdallen
  * @since 2021/1/22
  */
-public class OkHttpDownloader extends JDM3U8AbstractDownloader {
+public class OkHttpFileDownloader extends JDM3U8FileAbstractDownloader {
 
     @Override
     public void downloadM3U8MultiRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener) {

@@ -6,16 +6,14 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 
 import com.onedream.jdm3u8downloader.base.JDM3U8BaseDownloader;
-import com.onedream.jdm3u8downloader.bean.JDDownloadMessage;
-import com.onedream.jdm3u8downloader.bean.JDDownloadProgress;
 import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
 import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
-import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloader;
-import com.onedream.jdm3u8downloader.downloader.JDM3U8AbstractDownloaderFactory;
-import com.onedream.jdm3u8downloader.downloader.JDM3U8OriginalDownloaderFactory;
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloaderFactory;
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileOriginalDownloaderFactory;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
@@ -29,16 +27,16 @@ import java.util.List;
  */
 public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     private JDDownloadQueue downloadQueue;
-    private JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener;
+    private JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
     private String targetDir;
-    private JDM3U8AbstractDownloader abstractDownloader;
+    private JDM3U8FileAbstractDownloader abstractDownloader;
 
 
     public static final class Builder {
         private JDDownloadQueue downloadQueue;
-        private JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener;
+        private JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
         private String targetDir;
-        private JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory;
+        private JDM3U8FileAbstractDownloaderFactory jdm3U8AbstractDownloaderFactory;
 
         public Builder() {
 
@@ -59,68 +57,32 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
             return this;
         }
 
-        /**
-         * @deprecated use method setSaveDir to code
-         * {@link Builder setSaveDir(String saveDir)}
-         */
-        @Deprecated
-        public Builder targetDir(String targetDir) {
-            this.targetDir = targetDir;
-            return this;
-        }
-
         public Builder setSaveDir(String saveDir) {
             this.targetDir = saveDir;
             return this;
         }
 
-
-        /**
-         * @deprecated use method setDownloaderListener to code
-         * {@link Builder setDownloaderListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener)}
-         */
-        @Deprecated
-        public Builder GetM3U8FileListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener) {
-            this.getM3U8FileListener = getM3U8FileListener;
-            return this;
-        }
-
-        public Builder setDownloaderListener(JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener) {
+        public Builder setDownloaderListener(JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener) {
             this.getM3U8FileListener = getM3U8FileListener;
             return this;
         }
 
 
-        /**
-         * @deprecated use method setDownloaderFactory to code
-         * {@link Builder setDownloaderFactory(JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory)}
-         */
-        @Deprecated
-        public Builder AbstractDownloader(final JDM3U8AbstractDownloader abstractDownloader) {
-            this.jdm3U8AbstractDownloaderFactory = new JDM3U8AbstractDownloaderFactory() {
-                @Override
-                public JDM3U8AbstractDownloader createDownloader() {
-                    return abstractDownloader;
-                }
-            };
-            return this;
-        }
-
-        public Builder setDownloaderFactory(JDM3U8AbstractDownloaderFactory jdm3U8AbstractDownloaderFactory) {
+        public Builder setFileDownloaderFactory(JDM3U8FileAbstractDownloaderFactory jdm3U8AbstractDownloaderFactory) {
             this.jdm3U8AbstractDownloaderFactory = jdm3U8AbstractDownloaderFactory;
             return this;
         }
 
         public JDM3U8Downloader build() {
             if (null == jdm3U8AbstractDownloaderFactory) {
-                jdm3U8AbstractDownloaderFactory = JDM3U8OriginalDownloaderFactory.create();
+                jdm3U8AbstractDownloaderFactory = JDM3U8FileOriginalDownloaderFactory.create();
             }
             return new JDM3U8Downloader(targetDir, downloadQueue, getM3U8FileListener, jdm3U8AbstractDownloaderFactory.createDownloader());
         }
     }
 
 
-    private JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue, @NonNull JDM3U8DownloaderContract.GetM3U8FileListener getM3U8FileListener, JDM3U8AbstractDownloader abstractDownloader) {
+    private JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue, @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener, JDM3U8FileAbstractDownloader abstractDownloader) {
         this.targetDir = targetDir;
         this.downloadQueue = downloadQueue;
         this.getM3U8FileListener = getM3U8FileListener;
@@ -221,26 +183,29 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     @Override
     public void postDownloadProgress(int successCount, int tsFileCount, long itemLength) {
         if (downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_ING || downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_FINISH) {
-            getM3U8FileListener.postEvent(JDDownloadProgress.sendProgress(downloadQueue, successCount * itemLength, tsFileCount * itemLength, JDDownloadQueueState.STATE_DOWNLOAD_ING));
+            getM3U8FileListener.downloadProgress(downloadQueue, successCount * itemLength, tsFileCount * itemLength);
         }
     }
 
     @Override
     public void postDownloadErrorEvent(String errMsg) {
-        getM3U8FileListener.downloadErrorEvent(new JDDownloadMessage(downloadQueue, errMsg));
-        getM3U8FileListener.postEvent(JDDownloadProgress.sendState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_ERROR));
-        getM3U8FileListener.removeDownloadQueueEvent(downloadQueue);
+        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadError(downloadQueue, errMsg);
+        }
+        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_ERROR, errMsg);
     }
 
     @Override
     public void downloadSuccessEvent() {
-        getM3U8FileListener.downloadSuccessEvent(downloadQueue);
+        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadSuccess(downloadQueue);
+        }
+        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS));
     }
 
     @Override
     public void downloadFinish() {
-        getM3U8FileListener.removeDownloadQueueEvent(downloadQueue);
-        getM3U8FileListener.postEvent(JDDownloadProgress.sendHide(downloadQueue));
+        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_FINISH, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_FINISH));
     }
 
 
@@ -255,7 +220,10 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
 
     @Override
     public void pauseDownload() {
-        getM3U8FileListener.pauseDownload(downloadQueue);
+        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadPause(downloadQueue);
+        }
+        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_PAUSE, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_PAUSE));
     }
 
     public void startDownload() {

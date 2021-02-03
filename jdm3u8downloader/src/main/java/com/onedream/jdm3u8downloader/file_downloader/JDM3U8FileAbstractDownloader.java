@@ -1,4 +1,4 @@
-package com.onedream.jdm3u8downloader.downloader;
+package com.onedream.jdm3u8downloader.file_downloader;
 
 import androidx.annotation.NonNull;
 
@@ -13,7 +13,7 @@ import java.io.File;
  * @author jdallen
  * @since 2021/1/22
  */
-public abstract class JDM3U8AbstractDownloader {
+public abstract class JDM3U8FileAbstractDownloader {
     public abstract void downloadM3U8MultiRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener);
 
     public abstract void downloadM3U8SingleRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.BaseDownloadListener baseDownloadListener);

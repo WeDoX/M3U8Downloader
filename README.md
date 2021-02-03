@@ -63,7 +63,7 @@ private void startDownloadM3U8() {
                     }
 
                     @Override
-                    public void pauseDownload(JDDownloadQueue downloadQueue) {
+                    public void downloadPause(JDDownloadQueue downloadQueue) {
                         JDM3U8LogHelper.printLog("暂停下载" + downloadQueue.getMovie_title());
                     }
                 })

@@ -1,4 +1,4 @@
-package com.onedream.jdm3u8downloader.downloader;
+package com.onedream.jdm3u8downloader.file_downloader;
 
 import android.os.ConditionVariable;
 
@@ -24,7 +24,7 @@ import java.util.List;
  * @author jdallen
  * @since 2021/1/22
  */
-public class JDM3U8OriginalDownloader extends JDM3U8AbstractDownloader {
+public class JDM3U8FileOriginalDownloader extends JDM3U8FileAbstractDownloader {
 
     @Override
     public void downloadM3U8MultiRateFileContent(final String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener) {

@@ -1,8 +1,6 @@
 package com.onedream.jdm3u8downloader.listener;
 
 
-import com.onedream.jdm3u8downloader.bean.JDDownloadMessage;
-import com.onedream.jdm3u8downloader.bean.JDDownloadProgress;
 import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
 
 import java.util.List;
@@ -25,16 +23,18 @@ public interface JDM3U8DownloaderContract {
         void downloadFailure(String errMsg);
     }
 
-    interface GetM3U8FileListener {
-        void downloadErrorEvent(JDDownloadMessage message);
+    interface JDM3U8DownloadBaseListener {
+        void downloadState(JDDownloadQueue downloadQueue, int downloadState, String msg);
 
-        void postEvent(JDDownloadProgress progress);
+        void downloadProgress(JDDownloadQueue downloadQueue, long sofar, long total);
+    }
 
-        void downloadSuccessEvent(JDDownloadQueue downloadQueue);
+    interface JDM3U8DownloadListener extends JDM3U8DownloadBaseListener {
+        void downloadSuccess(JDDownloadQueue downloadQueue);
 
-        void removeDownloadQueueEvent(JDDownloadQueue downloadQueue);
+        void downloadError(JDDownloadQueue downloadQueue, String errMsg);
 
-        void pauseDownload(JDDownloadQueue downloadQueue);
+        void downloadPause(JDDownloadQueue downloadQueue);
     }
 
 }
