@@ -13,7 +13,7 @@ allprojects {
 Step 1. Add the dependency
 ~~~~~~~~~
 dependencies {
-	        implementation 'com.github.WeDox:M3U8Downloader:1.1.0'
+	        implementation 'com.github.WeDox:M3U8Downloader:2.0.0'
 	}
 ~~~~~~~~~
 Step 2.to use
@@ -26,40 +26,46 @@ Step 2.to use
     
 private void startDownloadM3U8() {
         JDDownloadQueue downloadQueue = new JDDownloadQueue();
-        downloadQueue.setMovie_id(10);
-        downloadQueue.setSingleRate(false);//多码率
-        downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");//多码率地址
-        downloadQueue.setMovie_title("摩羯阿婆");
-        downloadQueue.setMovie_num_index(1);
-        downloadQueue.setMovie_num_title("第一集");
-        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要，代表可以开始或停止下载ts文件列表
+        downloadQueue.setMovie_id(10);//电影或电视剧ID
+        downloadQueue.setSingleRate(false);//多码率下载地址
+        downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");//多码率下载地址
+        downloadQueue.setMovie_title("蛇形叼手");//电影名或电视剧名
+        downloadQueue.setMovie_num_index(0);//集数id
+        downloadQueue.setMovie_num_title("第0集");//集数名
+        downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要
 
         String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
-
         //
         JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
-                .targetDir(PATH_MOVIE)
-                .DownloadQueue(downloadQueue)
-                //.AbstractDownloader(new OkHttpDownloader())//可自定义m3u8相关文件下载器
-                .GetM3U8FileListener(new JDM3U8DownloaderContract.GetM3U8FileListener() {
+                .setSaveDir(PATH_MOVIE)
+                .setDownloadQueue(downloadQueue)
+                .setFileDownloaderFactory(OkHttpFileDownloaderFactory.create())
+                .setDownloaderListener(new JDM3U8DownloaderContract.JDM3U8DownloadListener() {
+
                     @Override
-                    public void downloadErrorEvent(JDDownloadMessage message) {
-                        JDM3U8LogHelper.printLog(message.message);
+                    public void downloadState(JDDownloadQueue downloadQueue, int downloadState, String msg) {
+                        String logMsg = downloadQueue + "\n下载状态码" + downloadState + "\n【解释】==" + JDDownloadQueueState.getSateStr(downloadState) + "\n携带的消息：" + msg;
+                        if (downloadState != JDDownloadQueueState.STATE_DOWNLOAD_FINISH) {
+                            //showText(logMsg);
+                        }
+                        JDM3U8LogHelper.printLog(logMsg);
                     }
 
                     @Override
-                    public void postEvent(JDDownloadProgress progress) {
-                        JDM3U8LogHelper.printLog("进度" + progress.toString());
+                    public void downloadProgress(JDDownloadQueue downloadQueue, long sofar, long total) {
+                        String logMsg = downloadQueue + "\n进度" + sofar + "\n总共" + total;
+                        //showText(logMsg);
+                        JDM3U8LogHelper.printLog(logMsg);
                     }
 
                     @Override
-                    public void downloadSuccessEvent(JDDownloadQueue downloadQueue) {
+                    public void downloadSuccess(JDDownloadQueue downloadQueue) {
                         JDM3U8LogHelper.printLog("下载成功事件：" + downloadQueue.getMovie_title());
                     }
 
                     @Override
-                    public void removeDownloadQueueEvent(JDDownloadQueue downloadQueue) {
-                        JDM3U8LogHelper.printLog("移除下载" + downloadQueue.getMovie_title());
+                    public void downloadError(JDDownloadQueue downloadQueue, String errMsg) {
+                        JDM3U8LogHelper.printLog(errMsg);
                     }
 
                     @Override
