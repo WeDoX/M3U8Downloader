@@ -39,7 +39,7 @@ private void startDownloadM3U8() {
         JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
                 .setSaveDir(PATH_MOVIE)
                 .setDownloadQueue(downloadQueue)
-                .setFileDownloaderFactory(OkHttpFileDownloaderFactory.create())
+                .setFileDownloaderFactory(JDM3U8FileOriginalDownloaderFactory.create())
                 .setDownloaderListener(new JDM3U8DownloaderContract.JDM3U8DownloadListener() {
 
                     @Override
