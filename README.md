@@ -126,7 +126,8 @@ JDM3U8Downloader中默认取多码率文件内容中的第一行（不以#开头
  ~~~~~~~~~
 
 
-多码率中第三行内容（即单码率的m3u8的路径）<br/>
+~~多码率中第三行内容（即单码率的m3u8的路径）<br/>~~
+多码率中该行内容（即单码率的m3u8的路径）<br/>
 如果是以/开头的话，使用多码率的下载地址url主机加该内容；（即http://yi.jingdianzuida.com拼接上/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8）
 所以该http://yi.jingdianzuida.com/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8<br/>
 
