@@ -113,8 +113,18 @@ http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8
 #EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=1000000,RESOLUTION=1080x608
 /ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8
 ~~~~~~~~
-JDM3U8BaseDownloader中默认取多码率文件内容中的第三行
-（自己可重写public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList)方法）
+~~JDM3U8BaseDownloader中默认取多码率文件内容中的第三行~~
+~~（自己可重写public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList)方法）~~
+
+JDM3U8Downloader中默认取多码率文件内容中的第一行（不以#开头，并且以.m3u8开头的行数）
+可以通过以下代码，自定义JDM3U8ModelConver，实现convertM3U8SingleRateUrlBean方式即可
+~~~~~~~~~
+ JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
+ .setModelConvert(JDM3U8ModelConvert modelConvert)
+ ....
+ .build();
+ ~~~~~~~~~
+
 
 多码率中第三行内容（即单码率的m3u8的路径）<br/>
 如果是以/开头的话，使用多码率的下载地址url主机加该内容；（即http://yi.jingdianzuida.com拼接上/ppvod/30BF460930E1ABAB6E46E4AF20BF4AF4.m3u8）
