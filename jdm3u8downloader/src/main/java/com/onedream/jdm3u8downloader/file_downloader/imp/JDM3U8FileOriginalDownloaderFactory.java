@@ -1,4 +1,6 @@
-package com.onedream.jdm3u8downloader.file_downloader;
+package com.onedream.jdm3u8downloader.file_downloader.imp;
+
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloaderFactory;
 
 /**
  * 创建{@link JDM3U8FileOriginalDownloader}的工厂类

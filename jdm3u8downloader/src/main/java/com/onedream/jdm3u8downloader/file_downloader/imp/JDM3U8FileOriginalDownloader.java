@@ -1,4 +1,4 @@
-package com.onedream.jdm3u8downloader.file_downloader;
+package com.onedream.jdm3u8downloader.file_downloader.imp;
 
 import android.os.ConditionVariable;
 
@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDM3U8DownloadHintMessage;
 import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8CloseUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;

@@ -11,9 +11,11 @@ import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
 import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.convert.JDM3U8ModelConvert;
+import com.onedream.jdm3u8downloader.convert.imp.JDM3U8ModelConvertImp;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloaderFactory;
-import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileOriginalDownloaderFactory;
+import com.onedream.jdm3u8downloader.file_downloader.imp.JDM3U8FileOriginalDownloaderFactory;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
@@ -26,17 +28,29 @@ import java.util.List;
  * @since 2020/4/3
  */
 public class JDM3U8Downloader extends JDM3U8BaseDownloader {
-    private JDDownloadQueue downloadQueue;
-    private JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
-    private String targetDir;
-    private JDM3U8FileAbstractDownloader abstractDownloader;
+    private final JDDownloadQueue downloadQueue;
+    private final JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
+    private final String targetDir;
+    private final JDM3U8FileAbstractDownloader abstractDownloader;
+    private final JDM3U8ModelConvert jdm3U8SingleRateUrlBeanConvert;
 
+    private JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue,
+                             @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener,
+                             JDM3U8FileAbstractDownloader abstractDownloader,
+                             @NonNull JDM3U8ModelConvert jdm3U8SingleRateUrlBeanConvert) {
+        this.targetDir = targetDir;
+        this.downloadQueue = downloadQueue;
+        this.getM3U8FileListener = getM3U8FileListener;
+        this.abstractDownloader = abstractDownloader;
+        this.jdm3U8SingleRateUrlBeanConvert = jdm3U8SingleRateUrlBeanConvert;
+    }
 
     public static final class Builder {
         private JDDownloadQueue downloadQueue;
         private JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
         private String targetDir;
         private JDM3U8FileAbstractDownloaderFactory jdm3U8AbstractDownloaderFactory;
+        private JDM3U8ModelConvert jdm3U8ModelConvert;
 
         public Builder() {
 
@@ -73,20 +87,25 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
             return this;
         }
 
+
+        public Builder setModelConvert(JDM3U8ModelConvert jdm3U8ModelConvert) {
+            this.jdm3U8ModelConvert = jdm3U8ModelConvert;
+            return this;
+        }
+
         public JDM3U8Downloader build() {
             if (null == jdm3U8AbstractDownloaderFactory) {
                 jdm3U8AbstractDownloaderFactory = JDM3U8FileOriginalDownloaderFactory.create();
             }
-            return new JDM3U8Downloader(targetDir, downloadQueue, getM3U8FileListener, jdm3U8AbstractDownloaderFactory.createDownloader());
+            if (null == jdm3U8ModelConvert) {
+                jdm3U8ModelConvert = new JDM3U8ModelConvertImp();
+            }
+            return new JDM3U8Downloader(targetDir,
+                    downloadQueue,
+                    getM3U8FileListener,
+                    jdm3U8AbstractDownloaderFactory.createDownloader(),
+                    jdm3U8ModelConvert);
         }
-    }
-
-
-    private JDM3U8Downloader(String targetDir, JDDownloadQueue downloadQueue, @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener, JDM3U8FileAbstractDownloader abstractDownloader) {
-        this.targetDir = targetDir;
-        this.downloadQueue = downloadQueue;
-        this.getM3U8FileListener = getM3U8FileListener;
-        this.abstractDownloader = abstractDownloader;
     }
 
 
@@ -99,12 +118,18 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
             for (String lineContent : fileContentList) {
                 content += lineContent + "\n";
             }
-            JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件已经存在，不需要再次请求网络，内容为：" + content);
+            JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件已经存在，不需要再次请求网络，内容为：" + fileContentList.toString());
             //
             baseDownloadListener.downloadSuccess(content, fileContentList, false);
             return;
         }
         abstractDownloader.downloadM3U8MultiRateFileContent(urlPath, baseDownloadListener);
+    }
+
+
+    @Override
+    public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList) {
+        return jdm3U8SingleRateUrlBeanConvert.convertM3U8SingleRateUrlBean(m3u8MultiRateFileDownloadUrl, dataList);
     }
 
     @Override
@@ -119,6 +144,10 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
         abstractDownloader.downloadM3U8SingleRateFileContent(m3u8FileUrlBean.getM3u8FileDownloadUrl(), baseDownloadListener);
     }
 
+    @Override
+    public  JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl){
+        return jdm3U8SingleRateUrlBeanConvert.convertM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
+    }
 
     @Override
     public void downloadM3U8Ts(List<String> tsUrlPathList, JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean) {

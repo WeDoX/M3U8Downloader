@@ -10,28 +10,30 @@ allprojects {
 		}
 	}
 ~~~~~~~~~
+
 Step 1. Add the dependency
 ~~~~~~~~~
 dependencies {
 	        implementation 'com.github.WeDox:M3U8Downloader:2.0.0'
 	}
 ~~~~~~~~~
+
 Step 2.to use
 ~~~~~~~~~
 //需要权限：
 
-   <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.INTERNET" />
     
-private void startDownloadM3U8() {
-        JDDownloadQueue downloadQueue = new JDDownloadQueue();
+    private void startDownloadM3U8() {
+        DDownloadQueue downloadQueue = new JDDownloadQueue();
         downloadQueue.setMovie_id(10);//电影或电视剧ID
-        downloadQueue.setSingleRate(false);//多码率下载地址
-        downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");//多码率下载地址
-        downloadQueue.setMovie_title("蛇形叼手");//电影名或电视剧名
+        downloadQueue.setMovie_download_url("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8");//下载地址
+        downloadQueue.setSingleRate(false);//movie_download_url是否是单码率下载地址 true-单码率 false-多码率
+        downloadQueue.setMovie_title("测试视频");//电影名或电视剧名
         downloadQueue.setMovie_num_index(0);//集数id
-        downloadQueue.setMovie_num_title("第0集");//集数名
+        downloadQueue.setMovie_num_title("完整版");//集数名
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要
 
         String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
@@ -81,6 +83,18 @@ private void startDownloadM3U8() {
 Step 3.Custom your file downloader(自定义文件下载器)
 
 参考工程中的okhttp_file_downloader目录下的Okhttp文件下载器
+
+
+
+Step 4.Custom your model convert(自定义Bean转换器:从多码率m3u8文件中取出单码率文件网址、从单码率m3u8文件取出ts文件网址）
+
+~~~~~~~~~
+ JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
+ .setModelConvert(JDM3U8ModelConvert modelConvert)
+ ....
+ .build();
+ ~~~~~~~~~
+具体请参考默认的JDM3U8ModelConvertImp.java实现类
 
 
 ### 下载流程，可归纳为以下六个步骤：

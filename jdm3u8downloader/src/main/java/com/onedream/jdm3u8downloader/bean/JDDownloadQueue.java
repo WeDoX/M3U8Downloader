@@ -96,7 +96,7 @@ public class JDDownloadQueue {
                 ", movie_download_url='" + movie_download_url + '\'' +
                 ", isSingleRate=" + isSingleRate +
                 ", movie_cover='" + movie_cover + '\'' +
-                ", state=" + state +
+                ", state=" + JDDownloadQueueState.getSateStr(state) +"("+state+")"+
                 '}';
     }
 }

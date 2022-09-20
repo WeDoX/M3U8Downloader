@@ -31,9 +31,7 @@ public abstract class JDM3U8BaseDownloader {
     public abstract void getM3U8MultiRateFileContent(String urlPath, @NonNull JDM3U8DownloaderContract.GetM3U8SingleRateContentListener getM3U8SingleRateContentListener);
 
     //获取单码率文件下载地址对象
-    public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList) {
-        return JDM3U8SingleRateUrlBean.getM3U8FileUrl(m3u8MultiRateFileDownloadUrl, dataList);
-    }
+    public abstract JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList);
 
     //下载获取单码率文件内容
     public abstract void getM3U8SingleRateFileContent(JDM3U8SingleRateUrlBean m3u8FileUrlBean, @NonNull JDM3U8DownloaderContract.BaseDownloadListener baseDownloadListener);
@@ -62,6 +60,11 @@ public abstract class JDM3U8BaseDownloader {
 
     //是否继续下载ts文件
     public abstract boolean canDownloadTsFile();
+
+
+
+    //获取下载单个ts文件对象
+    public abstract JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl);
 
     //下载单个ts文件
     public abstract int downLoadTsFile(JDM3U8TsBean m3U8TsBean);

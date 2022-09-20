@@ -32,7 +32,7 @@ public class JDM3U8TsFileDownloadTask extends AsyncTask<Integer, Integer, Intege
                 failureCount = -1;
                 break;
             }
-            JDM3U8TsBean m3U8TsBean = new JDM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
+            JDM3U8TsBean m3U8TsBean = m3U8BaseDownloader.getJDM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
             oldString = m3U8TsBean.getOldString();
             //3、下载ts文件
             int ret = m3U8BaseDownloader.downLoadTsFile(m3U8TsBean);
@@ -51,7 +51,7 @@ public class JDM3U8TsFileDownloadTask extends AsyncTask<Integer, Integer, Intege
             currentTsNum++;
         }//end for:
 
-        JDM3U8LogHelper.printLog("failureCount  = " + failureCount +"当前ts数量：" +currentTsNum);
+        JDM3U8LogHelper.printLog("failureCount  = " + failureCount + "当前ts数量：" + currentTsNum);
         return failureCount;
     }
 

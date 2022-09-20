@@ -49,12 +49,12 @@ public class MainActivity extends AppCompatActivity {
 
     private void startDownloadM3U8() {
         JDDownloadQueue downloadQueue = new JDDownloadQueue();
-        downloadQueue.setMovie_id(10);
-        downloadQueue.setSingleRate(false);
-        downloadQueue.setMovie_download_url("http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8");
-        downloadQueue.setMovie_title("蛇形叼手");
-        downloadQueue.setMovie_num_index(0);
-        downloadQueue.setMovie_num_title("第0集");
+        downloadQueue.setMovie_id(10);//电影或电视剧ID
+        downloadQueue.setMovie_download_url("https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8");//下载地址
+        downloadQueue.setSingleRate(false);//movie_download_url是否是单码率下载地址 true-单码率 false-多码率
+        downloadQueue.setMovie_title("测试视频");//电影名或电视剧名
+        downloadQueue.setMovie_num_index(0);//集数id
+        downloadQueue.setMovie_num_title("完整版");//集数名
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_QUEUE);//这个比较重要
 
         String PATH_MOVIE = JDM3U8FileCacheUtils.createRootDownloadPath(MainActivity.this) + File.separator + "download" + File.separator + "movie" + File.separator;
