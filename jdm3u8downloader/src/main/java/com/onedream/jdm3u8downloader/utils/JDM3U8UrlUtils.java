@@ -2,28 +2,11 @@ package com.onedream.jdm3u8downloader.utils;
 
 import android.text.TextUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 /**
  * @author jdallen
  * @since 2020/4/3
  */
-public class JDM3U8AnalysisUtils {
-    public static List<String> analysisIndex(String content) {
-        Pattern pattern = Pattern.compile(".*ts");
-        Matcher ma = pattern.matcher(content);
-        List<String> list = new ArrayList<String>();
-        while (ma.find()) {
-            String s = ma.group();
-            list.add(s);
-            JDM3U8LogHelper.printLog("analysisIndex获取的ts文件" + s);
-        }
-        return list;
-    }
-
+public class JDM3U8UrlUtils {
     /**
      * 将"/a/d/1.ts"分成"/a/d/"和"1.ts"
      * 由于类似/a/d/1.ts在本地无法播放，需将单码率文件的ts列表的/a/d/1.ts更改为1.ts，并将这些ts文件存放在单码率文件同一级别目录下
@@ -35,7 +18,7 @@ public class JDM3U8AnalysisUtils {
     public static String[] getTsOldStrAndFileNameStr(String tsFileUrl) {//isHostAddress为true时才调用
         String[] name = new String[2];
         name[0] = tsFileUrl.substring(0, tsFileUrl.lastIndexOf("/") + 1);
-        name[1] = tsFileUrl.substring(tsFileUrl.lastIndexOf("/") + 1, tsFileUrl.length());
+        name[1] = tsFileUrl.substring(tsFileUrl.lastIndexOf("/") + 1);
         return name;
     }
 

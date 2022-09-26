@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.text.TextUtils;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 
 import com.onedream.jdm3u8downloader.base.JDM3U8BaseDownloader;
 import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
@@ -16,6 +17,8 @@ import com.onedream.jdm3u8downloader.convert.imp.JDM3U8ModelConvertImp;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloaderFactory;
 import com.onedream.jdm3u8downloader.file_downloader.imp.JDM3U8FileOriginalDownloaderFactory;
+import com.onedream.jdm3u8downloader.listener.DownloadStateCallback;
+import com.onedream.jdm3u8downloader.listener.FileSaveCallback;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
@@ -145,19 +148,25 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     }
 
     @Override
-    public  JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl){
+    public List<String> getTsFileDownloadShortUrlList(String M3U8SingleRateFileContent) {
+        return jdm3U8SingleRateUrlBeanConvert.convertTsFileDownloadShortUrlList(M3U8SingleRateFileContent);
+    }
+
+    @Override
+    public JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl) {
         return jdm3U8SingleRateUrlBeanConvert.convertM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
     }
 
     @Override
-    public void downloadM3U8Ts(List<String> tsUrlPathList, JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean) {
+    public void downloadM3U8Ts(List<JDM3U8TsBean> tsUrlPathList, @Nullable DownloadStateCallback downloadStateCallback,  JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener) {
         //
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_ING);
         //
         JDM3U8TsFileDownloadTask downloadTask = new JDM3U8TsFileDownloadTask();
-        downloadTask.tsUrlPathList = tsUrlPathList;
-        downloadTask.m3U8SingleRateFileDownloadUrlBean = m3U8SingleRateFileDownloadUrlBean;
-        downloadTask.m3U8BaseDownloader = this;
+        downloadTask.m3U8TsBeanList = tsUrlPathList;
+        downloadTask.tsFileDownloadCallback = tsFileDownloadCallback;
+        downloadTask.downloadStateCallback = downloadStateCallback;
+        downloadTask.jdm3U8DownloadFullSuccessListener = jdm3U8DownloadFullSuccessListener;
         downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -165,102 +174,109 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     public void saveLocalM3U8SingleRate(String oldString) {
         //保存一份供本地播放的单码率m3u8文件
         if (!TextUtils.isEmpty(oldString)) {
-            /**
-             * 创建一份供本地播放的m3u8
-             */
             File m3u8File = JDM3U8FileCacheUtils.getM3u8File(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index());
             File m3u8LocalFile = JDM3U8FileCacheUtils.getM3u8LocalFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index());
-            alterStringToCreateNewFile(m3u8File, m3u8LocalFile, oldString, "");
+            JDM3U8FileCacheUtils.alterStringToCreateNewFile(m3u8File, m3u8LocalFile, oldString, "");
         } else {
             JDM3U8FileCacheUtils.saveM3U8LocalFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), JDM3U8FileCacheUtils.getM3U8FileContent(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index()));
         }
     }
 
 
-    @Override
-    public void saveM3U8MultiRateFile(String content) {
-        JDM3U8FileCacheUtils.saveM3U8TopFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), content);
-    }
-
-    @Override
-    public void saveM3U8SingleRateFile(String content) {
-        JDM3U8FileCacheUtils.saveM3U8File(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), content);
-    }
-
-
-    @Override
-    public boolean canDownloadTsFile() {
-        return downloadQueue.getState() != JDDownloadQueueState.STATE_DOWNLOAD_NO;
-    }
-
-    @Override
-    public int downLoadTsFile(JDM3U8TsBean m3U8TsBean) {
-        File tsSaveFile = JDM3U8FileCacheUtils.getTsFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
-        if (null != tsSaveFile) {
-            JDM3U8LogHelper.printLog("该电影" + downloadQueue.getMovie_id() + "的" + m3U8TsBean.getTsFileName() + "文件已经存在");
-            return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_SUCCESS;
-        } else {
-            tsSaveFile = JDM3U8FileCacheUtils.getTsFileAndIsEmptyNeedCreate(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
+    private final JDM3U8TsFileDownloadTask.TsFileDownloadCallback tsFileDownloadCallback = new JDM3U8TsFileDownloadTask.TsFileDownloadCallback() {
+        @Override
+        public boolean canDownloadTsFile() {
+            return downloadQueue.getState() != JDDownloadQueueState.STATE_DOWNLOAD_NO;
         }
-        if (null == tsSaveFile) {
-            JDM3U8LogHelper.printLog("创建ts文件失败");
-            return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_FAILURE;
+
+        @Override
+        public int downLoadTsFile(JDM3U8TsBean m3U8TsBean) {
+            File tsSaveFile = JDM3U8FileCacheUtils.getTsFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
+            if (null != tsSaveFile) {
+                JDM3U8LogHelper.printLog("该电影" + downloadQueue.getMovie_id() + "的" + m3U8TsBean.getTsFileName() + "文件已经存在");
+                return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_SUCCESS;
+            } else {
+                tsSaveFile = JDM3U8FileCacheUtils.getTsFileAndIsEmptyNeedCreate(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
+            }
+            if (null == tsSaveFile) {
+                JDM3U8LogHelper.printLog("创建ts文件失败");
+                return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_FAILURE;
+            }
+            return abstractDownloader.downLoadTsFile(m3U8TsBean, tsSaveFile);
         }
-        return abstractDownloader.downLoadTsFile(m3U8TsBean, tsSaveFile);
-    }
 
-    @Override
-    public void postDownloadProgress(int successCount, int tsFileCount, long itemLength) {
-        if (downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_ING || downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_FINISH) {
-            getM3U8FileListener.downloadProgress(downloadQueue, successCount * itemLength, tsFileCount * itemLength);
+        @Override
+        public long getTsFileSize(JDM3U8TsBean m3U8TsBean) {
+            File file = JDM3U8FileCacheUtils.getTsFileAndIsEmptyNeedCreate(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
+            if (null != file) {
+                return file.length();
+            }
+            return 0;
         }
-    }
-
-    @Override
-    public void postDownloadErrorEvent(String errMsg) {
-        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
-            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadError(downloadQueue, errMsg);
-        }
-        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_ERROR, errMsg);
-    }
-
-    @Override
-    public void downloadSuccessEvent() {
-        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
-            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadSuccess(downloadQueue);
-        }
-        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS));
-    }
-
-    @Override
-    public void downloadFinish() {
-        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_FINISH, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_FINISH));
-    }
+    };
 
 
-    @Override
-    public long getTsFileSize(JDM3U8TsBean m3U8TsBean) {
-        File file = JDM3U8FileCacheUtils.getTsFileAndIsEmptyNeedCreate(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), m3U8TsBean.getTsFileName());
-        if (null != file) {
-            return file.length();
-        }
-        return 0;
-    }
-
-    @Override
-    public void pauseDownload() {
-        if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
-            ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadPause(downloadQueue);
-        }
-        getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_PAUSE, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_PAUSE));
-    }
 
     public void startDownload() {
         if (downloadQueue.isSingleRate()) {
-            super.startDownloadSingleRateM3U8(downloadQueue.getMovie_download_url());
+            super.startDownloadSingleRateM3U8(downloadQueue.getMovie_download_url(), downloadStateCallback, fileSaveCallback);
         } else {
-            super.startDownloadMultiRateM3U8(downloadQueue.getMovie_download_url());
+            super.startDownloadMultiRateM3U8(downloadQueue.getMovie_download_url(), downloadStateCallback, fileSaveCallback);
+        }
+    }
+
+
+
+    private final DownloadStateCallback downloadStateCallback = new DownloadStateCallback() {
+        @Override
+        public void postDownloadProgressEvent(int successCount, int tsFileCount, long itemLength) {
+            if (downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_ING || downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_FINISH) {
+                getM3U8FileListener.downloadProgress(downloadQueue, successCount * itemLength, tsFileCount * itemLength);
+            }
         }
 
-    }
+        @Override
+        public void postDownloadErrorEvent(String errMsg) {
+            if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+                ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadError(downloadQueue, errMsg);
+            }
+            getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_ERROR, errMsg);
+        }
+
+        @Override
+        public void postDownloadSuccessEvent() {
+            if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+                ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadSuccess(downloadQueue);
+            }
+            getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_SUCCESS));
+        }
+
+        @Override
+        public void postDownloadCloseEvent() {
+            getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_FINISH, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_FINISH));
+        }
+
+
+        @Override
+        public void postDownloadPauseEvent() {
+            if (getM3U8FileListener instanceof JDM3U8DownloaderContract.JDM3U8DownloadListener) {
+                ((JDM3U8DownloaderContract.JDM3U8DownloadListener) getM3U8FileListener).downloadPause(downloadQueue);
+            }
+            getM3U8FileListener.downloadState(downloadQueue, JDDownloadQueueState.STATE_DOWNLOAD_PAUSE, JDDownloadQueueState.getSateStr(JDDownloadQueueState.STATE_DOWNLOAD_PAUSE));
+        }
+    };
+
+
+    private final FileSaveCallback fileSaveCallback = new FileSaveCallback() {
+        @Override
+        public void saveM3U8MultiRateFile(String content) {
+            JDM3U8FileCacheUtils.saveM3U8TopFile(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), content);
+        }
+
+        @Override
+        public void saveM3U8SingleRateFile(String content) {
+            JDM3U8FileCacheUtils.saveM3U8File(targetDir, downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), content);
+        }
+    };
+
 }

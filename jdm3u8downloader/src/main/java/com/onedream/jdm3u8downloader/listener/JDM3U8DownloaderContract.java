@@ -37,4 +37,8 @@ public interface JDM3U8DownloaderContract {
         void downloadPause(JDDownloadQueue downloadQueue);
     }
 
+    interface JDM3U8DownloadFullSuccessListener{
+        void downloadFullSuccessSaveLocalM3U8SingleRate(String oldString);
+    }
+
 }
