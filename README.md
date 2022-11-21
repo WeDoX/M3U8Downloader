@@ -94,6 +94,7 @@ Step 3. Custom your somethings
  .build();
  ~~~~~~~~~
 具体实现请参考默认的JDM3U8ModelConvertImp.java实现类
+
 (3)：Custom your FileLocalStorageManager(自定义本地文件存储管理器）
 ~~~~~~~~~
  JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
@@ -102,6 +103,7 @@ Step 3. Custom your somethings
  .build();
  ~~~~~~~~~
 具体实现请参考默认的JDM3U8FileLocalStorageManagerImp.java实现类
+
 
 ### 下载流程，可归纳为以下六个步骤：
 0、网络请求获取到m3u8多码率的文件内容<br/>
