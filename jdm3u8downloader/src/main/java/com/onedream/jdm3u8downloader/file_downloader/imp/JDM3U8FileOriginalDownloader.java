@@ -37,14 +37,12 @@ public class JDM3U8FileOriginalDownloader extends JDM3U8FileAbstractDownloader {
                 try {
                     URL url = new URL(urlPath);
                     bufferedReader = new BufferedReader(new InputStreamReader(url.openStream(), "UTF-8"));
-                    String content = "";
                     String line;
                     while ((line = bufferedReader.readLine()) != null) {
-                        content += line + "\n";
                         fileContentList.add(line);
                     }
-                    JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件下载文件的内容为：" + content);
-                    baseDownloadListener.downloadSuccess(content, fileContentList, true);
+                    JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件下载文件的内容为：" + fileContentList.toString());
+                    baseDownloadListener.downloadSuccess(fileContentList, true);
                 } catch (Exception e) {
                     e.printStackTrace();
                     JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件下载失败,原因为:" + e.toString());
