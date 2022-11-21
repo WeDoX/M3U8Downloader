@@ -18,7 +18,7 @@ public interface JDM3U8DownloaderContract {
     }
 
     interface GetM3U8SingleRateContentListener {
-        void downloadSuccess(String content, List<String> dataList, boolean isNeedSaveFile);//isNeedSaveFile为false时，content可以为空
+        void downloadSuccess(List<String> dataList, boolean isNeedSaveFile);//isNeedSaveFile为false时，content可以为空
 
         void downloadFailure(String errMsg);
     }

@@ -53,7 +53,11 @@ public class JDM3U8FileLocalStorageManagerImp implements JDM3U8FileLocalStorageM
     }
 
     @Override
-    public void saveM3U8MultiRateFile(JDDownloadQueue downloadQueue, String content) {
+    public void saveM3U8MultiRateFile(JDDownloadQueue downloadQueue, List<String> contentList) {
+        String content = "";
+        for (String lineContent : contentList) {
+            content += lineContent + "\n";
+        }
         JDM3U8FileCacheUtils.saveM3U8TopFile(getTargetDir(), downloadQueue.getMovie_id(), downloadQueue.getMovie_num_index(), content);
     }
 

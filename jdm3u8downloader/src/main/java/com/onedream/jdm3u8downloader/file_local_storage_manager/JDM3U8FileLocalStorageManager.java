@@ -27,7 +27,7 @@ public interface JDM3U8FileLocalStorageManager {
     File getTsFileAndIsEmptyNeedCreate(JDDownloadQueue downloadQueue, JDM3U8TsBean m3U8TsBean);
 
     //保存多码率文件
-    void saveM3U8MultiRateFile(JDDownloadQueue downloadQueue, String content);
+    void saveM3U8MultiRateFile(JDDownloadQueue downloadQueue, List<String> contentList);
 
     //保存单码率文件
     void saveM3U8SingleRateFile(JDDownloadQueue downloadQueue, String content);

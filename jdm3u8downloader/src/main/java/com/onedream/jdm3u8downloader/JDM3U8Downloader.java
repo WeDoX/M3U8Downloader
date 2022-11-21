@@ -33,20 +33,20 @@ import java.util.List;
 public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     private final JDDownloadQueue downloadQueue;
     private final JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
-    private final JDM3U8FileAbstractDownloader abstractDownloader;
-    private final JDM3U8ModelConvert jdm3U8SingleRateUrlBeanConvert;
-    private final JDM3U8FileLocalStorageManager jdm3U8FileLocalStorageManager;
+    private final JDM3U8FileAbstractDownloader fileDownloader;
+    private final JDM3U8ModelConvert modelConvert;
+    private final JDM3U8FileLocalStorageManager fileLocalStorageManager;
 
     private JDM3U8Downloader(JDDownloadQueue downloadQueue,
                              @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener,
-                             JDM3U8FileAbstractDownloader abstractDownloader,
-                             @NonNull JDM3U8ModelConvert jdm3U8SingleRateUrlBeanConvert,
-                             @NonNull JDM3U8FileLocalStorageManager jdm3U8FileLocalStorageManager) {
+                             JDM3U8FileAbstractDownloader fileDownloader,
+                             @NonNull JDM3U8ModelConvert modelConvert,
+                             @NonNull JDM3U8FileLocalStorageManager fileLocalStorageManager) {
         this.downloadQueue = downloadQueue;
         this.getM3U8FileListener = getM3U8FileListener;
-        this.abstractDownloader = abstractDownloader;
-        this.jdm3U8SingleRateUrlBeanConvert = jdm3U8SingleRateUrlBeanConvert;
-        this.jdm3U8FileLocalStorageManager = jdm3U8FileLocalStorageManager;
+        this.fileDownloader = fileDownloader;
+        this.modelConvert = modelConvert;
+        this.fileLocalStorageManager = fileLocalStorageManager;
     }
 
     public static final class Builder {
@@ -59,16 +59,6 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
 
         public Builder() {
 
-        }
-
-        /**
-         * @deprecated use method setDownloadQueue to code
-         * {@link Builder setDownloadQueue(JDDownloadQueue downloadQueue)}
-         */
-        @Deprecated
-        public Builder DownloadQueue(JDDownloadQueue downloadQueue) {
-            this.downloadQueue = downloadQueue;
-            return this;
         }
 
         public Builder setDownloadQueue(JDDownloadQueue downloadQueue) {
@@ -126,46 +116,41 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     @Override
     public void getM3U8MultiRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener) {
         //判断本地是否已经有该多码率文件
-        List<String> fileContentList = jdm3U8FileLocalStorageManager.getM3u8MultiRateFileContent(downloadQueue);
+        List<String> fileContentList = fileLocalStorageManager.getM3u8MultiRateFileContent(downloadQueue);
         if (null != fileContentList && fileContentList.size() > 0) {
-            String content = "";
-            for (String lineContent : fileContentList) {
-                content += lineContent + "\n";
-            }
             JDM3U8LogHelper.printLog("该电影的顶级M3U8多码率文件已经存在，不需要再次请求网络，内容为：" + fileContentList.toString());
-            //
-            baseDownloadListener.downloadSuccess(content, fileContentList, false);
+            baseDownloadListener.downloadSuccess(fileContentList, false);
             return;
         }
-        abstractDownloader.downloadM3U8MultiRateFileContent(urlPath, baseDownloadListener);
+        fileDownloader.downloadM3U8MultiRateFileContent(urlPath, baseDownloadListener);
     }
 
 
     @Override
     public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList) {
-        return jdm3U8SingleRateUrlBeanConvert.convertM3U8SingleRateUrlBean(m3u8MultiRateFileDownloadUrl, dataList);
+        return modelConvert.convertM3U8SingleRateUrlBean(m3u8MultiRateFileDownloadUrl, dataList);
     }
 
     @Override
     public void getM3U8SingleRateFileContent(JDM3U8SingleRateUrlBean m3u8FileUrlBean, @NonNull final JDM3U8DownloaderContract.BaseDownloadListener baseDownloadListener) {
         //判断本地是否已经有该单码率文件
-        String m3u8Content = jdm3U8FileLocalStorageManager.getM3U8SingleRateFileContent(downloadQueue);
+        String m3u8Content = fileLocalStorageManager.getM3U8SingleRateFileContent(downloadQueue);
         if (!TextUtils.isEmpty(m3u8Content)) {
             JDM3U8LogHelper.printLog("该电影的M3U8单码率文件已经存在，不需要再次请求网络，内容为：" + m3u8Content);
             baseDownloadListener.downloadSuccess(m3u8Content);
             return;
         }
-        abstractDownloader.downloadM3U8SingleRateFileContent(m3u8FileUrlBean.getM3u8FileDownloadUrl(), baseDownloadListener);
+        fileDownloader.downloadM3U8SingleRateFileContent(m3u8FileUrlBean.getM3u8FileDownloadUrl(), baseDownloadListener);
     }
 
     @Override
     public List<String> getTsFileDownloadShortUrlList(String M3U8SingleRateFileContent) {
-        return jdm3U8SingleRateUrlBeanConvert.convertTsFileDownloadShortUrlList(M3U8SingleRateFileContent);
+        return modelConvert.convertTsFileDownloadShortUrlList(M3U8SingleRateFileContent);
     }
 
     @Override
     public JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl) {
-        return jdm3U8SingleRateUrlBeanConvert.convertM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
+        return modelConvert.convertM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
     }
 
     @Override
@@ -183,7 +168,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
 
     @Override
     public void saveLocalM3U8SingleRate(String oldString) {
-        jdm3U8FileLocalStorageManager.saveLocalM3U8SingleRate(downloadQueue, oldString);
+        fileLocalStorageManager.saveLocalM3U8SingleRate(downloadQueue, oldString);
     }
 
 
@@ -195,23 +180,23 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
 
         @Override
         public int downLoadTsFile(JDM3U8TsBean m3U8TsBean) {
-            File tsSaveFile = jdm3U8FileLocalStorageManager.getTsFile(downloadQueue, m3U8TsBean);
+            File tsSaveFile = fileLocalStorageManager.getTsFile(downloadQueue, m3U8TsBean);
             if (null != tsSaveFile) {
                 JDM3U8LogHelper.printLog("该电影" + downloadQueue.getMovie_id() + "的" + m3U8TsBean.getTsFileName() + "文件已经存在");
                 return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_SUCCESS;
             } else {
-                tsSaveFile = jdm3U8FileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
+                tsSaveFile = fileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
             }
             if (null == tsSaveFile) {
                 JDM3U8LogHelper.printLog("创建ts文件失败");
                 return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_FAILURE;
             }
-            return abstractDownloader.downLoadTsFile(m3U8TsBean, tsSaveFile);
+            return fileDownloader.downLoadTsFile(m3U8TsBean, tsSaveFile);
         }
 
         @Override
         public long getTsFileSize(JDM3U8TsBean m3U8TsBean) {
-            File file = jdm3U8FileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
+            File file = fileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
             if (null != file) {
                 return file.length();
             }
@@ -222,9 +207,9 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
 
     public void startDownload() {
         if (downloadQueue.isSingleRate()) {
-            super.startDownloadSingleRateM3U8(downloadQueue, downloadStateCallback, jdm3U8FileLocalStorageManager);
+            super.startDownloadSingleRateM3U8(downloadQueue, downloadStateCallback, fileLocalStorageManager);
         } else {
-            super.startDownloadMultiRateM3U8(downloadQueue, downloadStateCallback, jdm3U8FileLocalStorageManager);
+            super.startDownloadMultiRateM3U8(downloadQueue, downloadStateCallback, fileLocalStorageManager);
         }
     }
 
