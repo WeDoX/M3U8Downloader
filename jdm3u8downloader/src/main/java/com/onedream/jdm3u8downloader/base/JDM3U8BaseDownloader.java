@@ -6,12 +6,13 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
+import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.common.JDM3U8DownloadHintMessage;
+import com.onedream.jdm3u8downloader.file_local_storage_manager.JDM3U8FileLocalStorageManager;
 import com.onedream.jdm3u8downloader.listener.DownloadStateCallback;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
-import com.onedream.jdm3u8downloader.listener.FileSaveCallback;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -71,9 +72,9 @@ public abstract class JDM3U8BaseDownloader {
 
 
     //根据多码率m3u8下载地址，下载视频
-    public void startDownloadMultiRateM3U8(final String multiRateM3U8DownloadUrl, @Nullable final DownloadStateCallback downloadStateCallback, @Nullable final FileSaveCallback fileSaveCallback) {
+    public void startDownloadMultiRateM3U8(final JDDownloadQueue downloadQueue, @Nullable final DownloadStateCallback downloadStateCallback, @Nullable final JDM3U8FileLocalStorageManager fileLocalStorageManager) {
         //0、网络请求获取到m3u8多码率的文件内容
-        getM3U8MultiRateFileContent(multiRateM3U8DownloadUrl, new JDM3U8DownloaderContract.GetM3U8SingleRateContentListener() {
+        getM3U8MultiRateFileContent(downloadQueue.getMovie_download_url(), new JDM3U8DownloaderContract.GetM3U8SingleRateContentListener() {
             @Override
             public void downloadSuccess(String content, List<String> dataList, boolean isNeedSaveFile) {
                 if (null == dataList || dataList.isEmpty()) {
@@ -85,12 +86,12 @@ public abstract class JDM3U8BaseDownloader {
 
                 if (isNeedSaveFile && !TextUtils.isEmpty(content)) {
                     //保存多码率的m3u8文件
-                    if(null != fileSaveCallback) {
-                        fileSaveCallback.saveM3U8MultiRateFile(content);
+                    if(null != fileLocalStorageManager) {
+                        fileLocalStorageManager.saveM3U8MultiRateFile(downloadQueue, content);
                     }
                 }
                 //1、得到单码率的下载地址(JDM3U8SingleRateUrlBean)
-                JDM3U8SingleRateUrlBean m3U8SingleRateUrlBean = getM3U8SingleRateUrlBean(multiRateM3U8DownloadUrl, dataList);
+                JDM3U8SingleRateUrlBean m3U8SingleRateUrlBean = getM3U8SingleRateUrlBean(downloadQueue.getMovie_download_url(), dataList);
                 if (null == m3U8SingleRateUrlBean || TextUtils.isEmpty(m3U8SingleRateUrlBean.getM3u8FileDownloadUrl())) {
                     if(null != downloadStateCallback) {
                         downloadStateCallback.postDownloadErrorEvent(JDM3U8DownloadHintMessage.M3U8MultiRateFileContent_IS_EMPTY);
@@ -98,7 +99,8 @@ public abstract class JDM3U8BaseDownloader {
                     return;
                 }
                 //开始下载单码率的m3u8文件
-                startDownloadSingleRateM3U8(m3U8SingleRateUrlBean.getM3u8FileDownloadUrl(), downloadStateCallback, fileSaveCallback);
+                downloadQueue.setMovie_download_url(m3U8SingleRateUrlBean.getM3u8FileDownloadUrl());
+                startDownloadSingleRateM3U8(downloadQueue, downloadStateCallback, fileLocalStorageManager);
             }
 
             @Override
@@ -112,8 +114,8 @@ public abstract class JDM3U8BaseDownloader {
 
 
     //根据单码率m3u8下载地址，下载视频
-    public void startDownloadSingleRateM3U8(String singleRateM3U8DownloadUrl, @Nullable final DownloadStateCallback downloadStateCallback, @Nullable final FileSaveCallback fileSaveCallback) {
-        final JDM3U8SingleRateUrlBean m3U8SingleRateUrlBean = new JDM3U8SingleRateUrlBean(singleRateM3U8DownloadUrl);
+    public void startDownloadSingleRateM3U8(final JDDownloadQueue downloadQueue, @Nullable final DownloadStateCallback downloadStateCallback, @Nullable final JDM3U8FileLocalStorageManager fileLocalStorageManager) {
+        final JDM3U8SingleRateUrlBean m3U8SingleRateUrlBean = new JDM3U8SingleRateUrlBean(downloadQueue.getMovie_download_url());
         if (null == m3U8SingleRateUrlBean || TextUtils.isEmpty(m3U8SingleRateUrlBean.getM3u8FileDownloadUrl())) {
             if(null != downloadStateCallback){
                 downloadStateCallback.postDownloadErrorEvent(JDM3U8DownloadHintMessage.M3U8SingleRateURL_IS_EMPTY);
@@ -132,8 +134,8 @@ public abstract class JDM3U8BaseDownloader {
                 }
 
                 //保存单码率的m3u8文件
-                if(null != fileSaveCallback) {
-                    fileSaveCallback.saveM3U8SingleRateFile(content);
+                if(null != fileLocalStorageManager) {
+                    fileLocalStorageManager.saveM3U8SingleRateFile(downloadQueue, content);
                 }
 
                 //得到ts列表的下载地址
