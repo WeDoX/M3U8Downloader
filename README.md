@@ -80,22 +80,28 @@ Step 2.to use
     }
 ~~~~~~~~~
 
-Step 3.Custom your file downloader(自定义文件下载器)
+Step 3. Custom your somethings
+
+(1) Custom your file downloader(自定义文件下载器)
 
 参考工程中的okhttp_file_downloader目录下的Okhttp文件下载器
 
-
-
-Step 4.Custom your model convert(自定义Bean转换器:从多码率m3u8文件中取出单码率文件网址、从单码率m3u8文件取出ts文件网址）
-
+(2) Custom your model convert(自定义Bean转换器:从多码率m3u8文件中取出单码率文件网址、从单码率m3u8文件取出ts文件网址）
 ~~~~~~~~~
  JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
  .setModelConvert(JDM3U8ModelConvert modelConvert)
  ....
  .build();
  ~~~~~~~~~
-具体请参考默认的JDM3U8ModelConvertImp.java实现类
-
+具体实现请参考默认的JDM3U8ModelConvertImp.java实现类
+(3)：Custom your FileLocalStorageManager(自定义本地文件存储管理器）
+~~~~~~~~~
+ JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
+ .setFileLocalStorageManager(JDM3U8FileLocalStorageManager fileLocalStorageManager)
+ ....
+ .build();
+ ~~~~~~~~~
+具体实现请参考默认的JDM3U8FileLocalStorageManagerImp.java实现类
 
 ### 下载流程，可归纳为以下六个步骤：
 0、网络请求获取到m3u8多码率的文件内容<br/>

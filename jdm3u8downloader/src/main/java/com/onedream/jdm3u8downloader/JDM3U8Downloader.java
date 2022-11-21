@@ -93,13 +93,13 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
         }
 
 
-        public Builder setModelConvert(JDM3U8ModelConvert jdm3U8ModelConvert) {
-            this.jdm3U8ModelConvert = jdm3U8ModelConvert;
+        public Builder setModelConvert(JDM3U8ModelConvert modelConvert) {
+            this.jdm3U8ModelConvert = modelConvert;
             return this;
         }
 
-        public Builder setFileLocalStorageManager(JDM3U8FileLocalStorageManager jdm3U8FileLocalStorageManager) {
-            this.jdm3U8FileLocalStorageManager = jdm3U8FileLocalStorageManager;
+        public Builder setFileLocalStorageManager(JDM3U8FileLocalStorageManager fileLocalStorageManager) {
+            this.jdm3U8FileLocalStorageManager = fileLocalStorageManager;
             return this;
         }
 
