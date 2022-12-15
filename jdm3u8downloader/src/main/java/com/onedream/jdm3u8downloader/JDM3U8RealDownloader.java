@@ -11,14 +11,13 @@ import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
 import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
-import com.onedream.jdm3u8downloader.bean.state.JDM3U8TsDownloadState;
 import com.onedream.jdm3u8downloader.convert.JDM3U8ModelConvert;
+import com.onedream.jdm3u8downloader.download_ts_file.JDM3U8TsFileDownloadTask;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.file_local_storage_manager.JDM3U8FileLocalStorageManager;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 
-import java.io.File;
 import java.util.List;
 
 public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
@@ -88,10 +87,12 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_ING);
         //
         JDM3U8TsFileDownloadTask downloadTask = new JDM3U8TsFileDownloadTask();
+        downloadTask.downloadQueue = downloadQueue;
         downloadTask.m3U8TsBeanList = tsUrlPathList;
-        downloadTask.tsFileDownloadCallback = tsFileDownloadCallback;
         downloadTask.downloadStateCallback = downloadStateCallback;
         downloadTask.jdm3U8DownloadFullSuccessListener = jdm3U8DownloadFullSuccessListener;
+        downloadTask.fileDownloader = fileDownloader;
+        downloadTask.fileLocalStorageManager = fileLocalStorageManager;
         downloadTask.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
     }
 
@@ -99,39 +100,6 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
     public void saveLocalM3U8SingleRate(String oldString) {
         fileLocalStorageManager.saveLocalM3U8SingleRate(downloadQueue, oldString);
     }
-
-
-    private final JDM3U8TsFileDownloadTask.TsFileDownloadCallback tsFileDownloadCallback = new JDM3U8TsFileDownloadTask.TsFileDownloadCallback() {
-        @Override
-        public boolean canDownloadTsFile() {
-            return downloadQueue.getState() != JDDownloadQueueState.STATE_DOWNLOAD_NO;
-        }
-
-        @Override
-        public int downLoadTsFile(JDM3U8TsBean m3U8TsBean) {
-            File tsSaveFile = fileLocalStorageManager.getTsFile(downloadQueue, m3U8TsBean);
-            if (null != tsSaveFile) {
-                JDM3U8LogHelper.printLog("该电影" + downloadQueue.getMovie_id() + "的" + m3U8TsBean.getTsFileName() + "文件已经存在");
-                return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_SUCCESS;
-            } else {
-                tsSaveFile = fileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
-            }
-            if (null == tsSaveFile) {
-                JDM3U8LogHelper.printLog("创建ts文件失败");
-                return JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_FAILURE;
-            }
-            return fileDownloader.downLoadTsFile(m3U8TsBean, tsSaveFile);
-        }
-
-        @Override
-        public long getTsFileSize(JDM3U8TsBean m3U8TsBean) {
-            File file = fileLocalStorageManager.getTsFileAndIsEmptyNeedCreate(downloadQueue, m3U8TsBean);
-            if (null != file) {
-                return file.length();
-            }
-            return 0;
-        }
-    };
 
 
     public void startDownload() {
