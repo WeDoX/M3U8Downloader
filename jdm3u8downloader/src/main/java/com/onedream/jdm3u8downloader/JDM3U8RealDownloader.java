@@ -20,6 +20,10 @@ import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 
 import java.util.List;
 
+/**
+ * @author jdallen
+ * @since 2022/12/15
+ */
 public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
 
     private final JDDownloadQueue downloadQueue;
