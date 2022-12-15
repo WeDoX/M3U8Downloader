@@ -1,4 +1,4 @@
-package com.onedream.jdm3u8downloader.common;
+package com.onedream.jdm3u8downloader.bean.state;
 
 import androidx.annotation.IntDef;
 

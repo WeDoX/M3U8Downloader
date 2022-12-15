@@ -10,8 +10,8 @@ import com.onedream.jdm3u8downloader.base.JDM3U8BaseDownloader;
 import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
-import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
-import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.bean.state.JDM3U8TsDownloadState;
 import com.onedream.jdm3u8downloader.convert.JDM3U8ModelConvert;
 import com.onedream.jdm3u8downloader.convert.imp.JDM3U8ModelConvertImp;
 import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
@@ -19,7 +19,6 @@ import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloade
 import com.onedream.jdm3u8downloader.file_downloader.imp.JDM3U8FileOriginalDownloaderFactory;
 import com.onedream.jdm3u8downloader.file_local_storage_manager.JDM3U8FileLocalStorageManager;
 import com.onedream.jdm3u8downloader.file_local_storage_manager.imp.JDM3U8FileLocalStorageManagerImp;
-import com.onedream.jdm3u8downloader.listener.DownloadStateCallback;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 
@@ -154,7 +153,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     }
 
     @Override
-    public void downloadM3U8Ts(List<JDM3U8TsBean> tsUrlPathList, @Nullable DownloadStateCallback downloadStateCallback, JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener) {
+    public void downloadM3U8Ts(List<JDM3U8TsBean> tsUrlPathList, @Nullable JDM3U8DownloaderContract.DownloadStateCallback downloadStateCallback, JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener) {
         //
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_ING);
         //
@@ -214,7 +213,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     }
 
 
-    private final DownloadStateCallback downloadStateCallback = new DownloadStateCallback() {
+    private final JDM3U8DownloaderContract.DownloadStateCallback downloadStateCallback = new JDM3U8DownloaderContract.DownloadStateCallback() {
         @Override
         public void postDownloadProgressEvent(int successCount, int tsFileCount, long itemLength) {
             if (downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_ING || downloadQueue.getState() == JDDownloadQueueState.STATE_DOWNLOAD_FINISH) {

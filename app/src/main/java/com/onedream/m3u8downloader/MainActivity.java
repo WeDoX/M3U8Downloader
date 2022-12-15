@@ -8,7 +8,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.onedream.jdm3u8downloader.JDM3U8Downloader;
 import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
-import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;

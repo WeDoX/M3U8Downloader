@@ -1,6 +1,6 @@
 package com.onedream.jdm3u8downloader.bean;
 
-import com.onedream.jdm3u8downloader.common.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
 
 /**
  * 下载队列实体

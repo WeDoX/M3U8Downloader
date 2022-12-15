@@ -4,9 +4,8 @@ import android.os.AsyncTask;
 
 import androidx.annotation.Nullable;
 
-import com.onedream.jdm3u8downloader.listener.DownloadStateCallback;
 import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
-import com.onedream.jdm3u8downloader.common.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.bean.state.JDM3U8TsDownloadState;
 import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
 import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
 
@@ -19,7 +18,7 @@ import java.util.List;
 public class JDM3U8TsFileDownloadTask extends AsyncTask<Integer, Integer, Integer> {
     public List<JDM3U8TsBean> m3U8TsBeanList;
     public TsFileDownloadCallback tsFileDownloadCallback;
-    public @Nullable DownloadStateCallback downloadStateCallback;
+    public @Nullable JDM3U8DownloaderContract.DownloadStateCallback downloadStateCallback;
     public JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener;
 
     //
