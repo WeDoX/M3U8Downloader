@@ -43,19 +43,19 @@ public interface JDM3U8DownloaderContract {
 
     interface DownloadStateCallback {
 
-        //发布下载进度信息
+        //发布下载进度事件
         void postDownloadProgressEvent(int successCount, int tsFileCount, long itemLength);
 
-        //暂停下载
+        //发布下载已暂停事件
         void postDownloadPauseEvent();
 
-        //发布下载错误信息
+        //发布下载错误事件
         void postDownloadErrorEvent(String errMsg);
 
-        //发布下载成功信息
+        //发布下载成功事件
         void postDownloadSuccessEvent();
 
-        //下载流程完成（下载失败或下载成功）
+        //下载流程完成（下载失败或下载成功）事件
         void postDownloadCloseEvent();
     }
 
