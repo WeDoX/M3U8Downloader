@@ -3,7 +3,7 @@ package com.onedream.jdm3u8downloader;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.onedream.jdm3u8downloader.ability.model_converter.JDM3U8BaseModelConverter;
+import com.onedream.jdm3u8downloader.ability.model_converter.JDM3U8ModelConverter;
 import com.onedream.jdm3u8downloader.core.JDM3U8BaseDownloader;
 import com.onedream.jdm3u8downloader.core.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.core.bean.JDM3U8SingleRateUrlBean;
@@ -28,7 +28,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
     private JDM3U8Downloader(JDDownloadQueue downloadQueue,
                              @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener,
                              JDM3U8FileAbstractDownloader fileDownloader,
-                             @NonNull JDM3U8BaseModelConverter modelConvert,
+                             @NonNull JDM3U8ModelConverter modelConvert,
                              @NonNull JDM3U8FileLocalStorageManager fileLocalStorageManager) {
         realDownloader = new JDM3U8RealDownloader(downloadQueue, getM3U8FileListener, fileDownloader, modelConvert, fileLocalStorageManager);
     }
@@ -38,7 +38,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
         private JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
         private String targetDir;
         private JDM3U8FileAbstractDownloaderFactory jdm3U8AbstractDownloaderFactory;
-        private JDM3U8BaseModelConverter jdm3U8ModelConvert;
+        private JDM3U8ModelConverter jdm3U8ModelConvert;
         private JDM3U8FileLocalStorageManager jdm3U8FileLocalStorageManager;
 
         public Builder() {
@@ -67,7 +67,7 @@ public class JDM3U8Downloader extends JDM3U8BaseDownloader {
         }
 
 
-        public Builder setModelConvert(JDM3U8BaseModelConverter modelConvert) {
+        public Builder setModelConvert(JDM3U8ModelConverter modelConvert) {
             this.jdm3U8ModelConvert = modelConvert;
             return this;
         }

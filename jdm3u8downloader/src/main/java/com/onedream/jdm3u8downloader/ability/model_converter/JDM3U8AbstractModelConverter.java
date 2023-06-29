@@ -13,7 +13,7 @@ import java.util.List;
  * 1、从单码率m3u8文件内容中，获取到ts文件下载短链地址列表
  * 2、将每条ts文件下载短链地址，处理转换得到ts文件下载对象: JDM3U8TsDownloadUrlBean
  */
-public abstract class JDM3U8AbstractModelConverter implements JDM3U8BaseModelConverter{
+public abstract class JDM3U8AbstractModelConverter implements JDM3U8ModelConverter {
 
     @Override
     public List<JDM3U8TsDownloadUrlBean> convertToM3U8TsDownloadUrlBeanList(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String M3U8SingleRateFileContent) {

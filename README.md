@@ -86,14 +86,14 @@ Step 3. Custom your somethings
 
 参考工程中的okhttp_file_downloader目录下的Okhttp文件下载器
 
-(2) Custom your model convert(自定义Bean转换器:从多码率m3u8文件中取出单码率文件网址、从单码率m3u8文件取出ts文件网址）
+(2) Custom your model converter(自定义Bean转换器:从多码率m3u8文件中取出单码率文件网址、从单码率m3u8文件取出ts文件网址）
 ~~~~~~~~~
  JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
- .setModelConvert(JDM3U8ModelConvert modelConvert)
+ .setModelConverter(JDM3U8ModelConverter modelConverter)
  ....
  .build();
  ~~~~~~~~~
-具体实现请参考默认的JDM3U8ModelConvertImp.java实现类
+具体实现请参考默认的JDM3U8ModelConverterImp.java实现类
 
 (3)：Custom your FileLocalStorageManager(自定义本地文件存储管理器）
 ~~~~~~~~~
@@ -106,12 +106,12 @@ Step 3. Custom your somethings
 
 
 ### 下载流程，可归纳为以下六个步骤：
-0、网络请求获取到m3u8多码率的文件内容<br/>
-1、得到单码率的下载地址(JDM3U8SingleRateUrlBean)<br/>
-2、网络请求获取到m3u8单码率的文件内容<br/>
-3、得到ts列表的下载地址<br/>
-4、下载各个ts文件<br/>
-5、保存一份供本地播放的单码率m3u8文件<br/>
+0、网络请求获取到m3u8多码率的文件内容
+1、处理转换【m3u8多码率的文件内容】得到单码率的下载地址(JDM3U8SingleRateUrlBean)
+2、网络请求获取到m3u8单码率的文件内容
+3、处理转换【m3u8单码率的文件内容】得到ts列表的下载地址
+4、下载各个ts文件
+5、保存一份供本地播放的单码率m3u8文件
 
 
 #### （注意）从多码率文件中取出第一个指定码率的m3u8下载地址
@@ -125,10 +125,10 @@ http://yi.jingdianzuida.com/20190905/yM4FKbnk/index.m3u8
 ~~（自己可重写public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList)方法）~~
 
 JDM3U8Downloader中默认取多码率文件内容中的第一行（不以#开头，并且以.m3u8开头的行数）
-可以通过以下代码，自定义JDM3U8ModelConver，实现convertM3U8SingleRateUrlBean方式即可
+可以通过以下代码，自定义JDM3U8ModelConverter，实现covertToM3U8SingleRateUrlBean方式即可
 ~~~~~~~~~
  JDM3U8Downloader jdm3U8Downloader = new JDM3U8Downloader.Builder()
- .setModelConvert(JDM3U8ModelConvert modelConvert)
+ .setModelConverter(JDM3U8ModelConverter modelConverter)
  ....
  .build();
  ~~~~~~~~~

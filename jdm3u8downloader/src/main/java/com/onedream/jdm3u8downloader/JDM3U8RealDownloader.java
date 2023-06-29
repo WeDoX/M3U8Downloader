@@ -11,7 +11,7 @@ import com.onedream.jdm3u8downloader.core.bean.JDDownloadQueue;
 import com.onedream.jdm3u8downloader.core.bean.JDM3U8SingleRateUrlBean;
 import com.onedream.jdm3u8downloader.core.bean.JDM3U8TsDownloadUrlBean;
 import com.onedream.jdm3u8downloader.core.bean.state.JDDownloadQueueState;
-import com.onedream.jdm3u8downloader.ability.model_converter.JDM3U8BaseModelConverter;
+import com.onedream.jdm3u8downloader.ability.model_converter.JDM3U8ModelConverter;
 import com.onedream.jdm3u8downloader.core.download_ts_file.JDM3U8TsFileDownloadTask;
 import com.onedream.jdm3u8downloader.ability.file_downloader.JDM3U8FileAbstractDownloader;
 import com.onedream.jdm3u8downloader.ability.file_local_storage_manager.JDM3U8FileLocalStorageManager;
@@ -29,13 +29,13 @@ class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
     private final JDDownloadQueue downloadQueue;
     private final JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
     private final JDM3U8FileAbstractDownloader fileDownloader;
-    private final JDM3U8BaseModelConverter modelConvert;
+    private final JDM3U8ModelConverter modelConvert;
     private final JDM3U8FileLocalStorageManager fileLocalStorageManager;
 
     public JDM3U8RealDownloader(JDDownloadQueue downloadQueue,
                                 @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener,
                                 JDM3U8FileAbstractDownloader fileDownloader,
-                                @NonNull JDM3U8BaseModelConverter modelConvert,
+                                @NonNull JDM3U8ModelConverter modelConvert,
                                 @NonNull JDM3U8FileLocalStorageManager fileLocalStorageManager) {
         this.downloadQueue = downloadQueue;
         this.getM3U8FileListener = getM3U8FileListener;

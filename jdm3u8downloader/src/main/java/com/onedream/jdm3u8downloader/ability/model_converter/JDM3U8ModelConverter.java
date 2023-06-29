@@ -13,7 +13,7 @@ import java.util.List;
  * 2、处理转换【m3u8单码率的文件内容】得到ts列表的下载地址
  */
 
-public interface JDM3U8BaseModelConverter {
+public interface JDM3U8ModelConverter {
     /**
      * 处理转换【m3u8多码率的文件内容】得到单码率的下载地址(JDM3U8SingleRateUrlBean)
      *
