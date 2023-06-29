@@ -20,12 +20,11 @@ dependencies {
 
 Step 2.to use
 ~~~~~~~~~
-//需要权限：
+//需要网络权限，该框架存储的现有实现不需要申请存储权限，自定义文件存储的自行添加申请
+<uses-permission android:name="android.permission.INTERNET" />
+~~~~~~~~~
 
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.INTERNET" />
-    
+~~~~~~~~~
     private void startDownloadM3U8() {
         DDownloadQueue downloadQueue = new JDDownloadQueue();
         downloadQueue.setMovie_id(10);//电影或电视剧ID

@@ -1,22 +1,14 @@
 package com.onedream.jdm3u8downloader.core.utils;
 
 import android.content.Context;
-import android.os.Environment;
-import android.text.TextUtils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -45,14 +37,14 @@ public class JDM3U8FileCacheUtils {
     public static File getM3u8TopFile(String targetDir, long movieId, int movie_num_index) {
         File file = new File(getM3u8TopFilePath(targetDir, movieId, movie_num_index));
         if (!file.exists())
-            createFile(file);
+            JDM3U8FileCacheBaseUtils.createFile(file);
         return file;
     }
 
     public static File getM3u8File(String targetDir, long movieId, int movie_num_index) {
         File file = new File(getM3u8FilePath(targetDir, movieId, movie_num_index));
         if (!file.exists())
-            createFile(file);
+            JDM3U8FileCacheBaseUtils.createFile(file);
         return file;
     }
 
@@ -60,7 +52,7 @@ public class JDM3U8FileCacheUtils {
     public static File getM3u8LocalFile(String targetDir, long movieId, int movie_num_index) {
         File file = new File(getM3u8LocalFilePath(targetDir, movieId, movie_num_index));
         if (!file.exists())
-            createFile(file);
+            JDM3U8FileCacheBaseUtils.createFile(file);
         return file;
     }
 
@@ -72,195 +64,23 @@ public class JDM3U8FileCacheUtils {
     public static File getTsFileAndIsEmptyNeedCreate(String targetDir, long movieId, int movie_num_index, String tsFileName) {
         File file = new File(getTsFilePath(targetDir, movieId, movie_num_index, tsFileName));
         if (!file.exists())
-            createFile(file);
+            JDM3U8FileCacheBaseUtils.createFile(file);
         return file;
     }
 
 
     /**
      * 创建根下载目录
-     *
-     * @return
      */
     public static String createRootDownloadPath(Context context) {
-        String cacheRootPath = "";
-        if (isSdCardAvailable()) {
-            // /sdcard/Android/data/<application package>/files
-            cacheRootPath = context.getExternalFilesDir("").getPath();
-        } else {
-            // /data/data/<application package>/files
-            cacheRootPath = context.getFilesDir().getPath();
-        }
-        return cacheRootPath;
+        return JDM3U8FileCacheBaseUtils.createRootFilesDir(context);
     }
-
-    /**
-     * 创建根缓存目录
-     *
-     * @return
-     */
-    public static String createRootPath(Context context) {
-        String cacheRootPath = "";
-        if (isSdCardAvailable()) {
-            // /sdcard/Android/data/<application package>/cache
-            cacheRootPath = context.getExternalCacheDir().getPath();
-        } else {
-            // /data/data/<application package>/cache
-            cacheRootPath = context.getCacheDir().getPath();
-        }
-        return cacheRootPath;
-    }
-
-    public static boolean isSdCardAvailable() {
-        return Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
-    }
-
-    /**
-     * 递归创建文件夹
-     *
-     * @param dirPath
-     * @return 创建失败返回""
-     */
-    public static String createDir(String dirPath) {
-        try {
-            File file = new File(dirPath);
-            if (file.getParentFile().exists()) {
-                printLog("----- 创建文件夹" + file.getAbsolutePath());
-                file.mkdir();
-                return file.getAbsolutePath();
-            } else {
-                createDir(file.getParentFile().getAbsolutePath());
-                printLog("----- 创建文件夹" + file.getAbsolutePath());
-                file.mkdir();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return dirPath;
-    }
-
-    /**
-     * 递归创建文件夹
-     *
-     * @param file
-     * @return 创建失败返回""
-     */
-    public static String createFile(File file) {
-        try {
-            if (file.getParentFile().exists()) {
-                printLog("----- 创建文件" + file.getAbsolutePath());
-                file.createNewFile();
-                return file.getAbsolutePath();
-            } else {
-                createDir(file.getParentFile().getAbsolutePath());
-                file.createNewFile();
-                printLog("----- 创建文件" + file.getAbsolutePath());
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            printLog("----- 创建文件出现异常" + e.toString());
-        }
-        return "";
-    }
-
-    /**
-     * 将内容写入文件
-     *
-     * @param filePath eg:/mnt/sdcard/demo.txt
-     * @param content  内容
-     * @param isAppend 是否追加
-     */
-    public static void writeFile(String filePath, String content, boolean isAppend) {
-        writeFile(filePath,content.getBytes(),isAppend);
-    }
-
-    public static void writeFile(String filePath, byte[] bytes, boolean isAppend) {
-        printLog("save:" + filePath);
-        try {
-            FileOutputStream fout = new FileOutputStream(filePath, isAppend);
-            fout.write(bytes);
-            fout.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    public static byte[] getBytesFromFile(File f) {
-        if (f == null) {
-            return null;
-        }
-        try {
-            FileInputStream stream = new FileInputStream(f);
-            ByteArrayOutputStream out = new ByteArrayOutputStream(1000);
-            byte[] b = new byte[1000];
-            for (int n; (n = stream.read(b)) != -1; ) {
-                out.write(b, 0, n);
-            }
-            stream.close();
-            out.close();
-            return out.toByteArray();
-        } catch (IOException e) {
-        }
-        return null;
-    }
-
-
-    /**
-     * 删除指定文件，如果是文件夹，则递归删除
-     *
-     * @param file
-     * @return
-     * @throws IOException
-     */
-    public static boolean deleteFileOrDirectory(File file) throws IOException {
-        try {
-            if (file != null && file.isFile()) {
-                return file.delete();
-            }
-            if (file != null && file.isDirectory()) {
-                File[] childFiles = file.listFiles();
-                // 删除空文件夹
-                if (childFiles == null || childFiles.length == 0) {
-                    return file.delete();
-                }
-                // 递归删除文件夹下的子文件
-                for (int i = 0; i < childFiles.length; i++) {
-                    deleteFileOrDirectory(childFiles[i]);
-                }
-                return file.delete();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
-
-
-    public static void clearInfoForFile(File file) {
-        FileWriter fileWriter = null;
-        try {
-            fileWriter = new FileWriter(file);
-            fileWriter.write("");
-            fileWriter.flush();
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            JDM3U8CloseUtils.close(fileWriter);
-        }
-    }
-
-    private static void printLog(String errMsg) {
-        JDM3U8LogHelper.printLog("JDM3U8FileCacheUtils:" + errMsg);
-    }
-
 
     //m3u8多码率文件操作
     public String getM3U8TopFileContent(String targetDir, long movieId, int movie_num_index) {
         File file = JDM3U8FileCacheUtils.getM3u8TopFile(targetDir, movieId, movie_num_index);
         if (null != file) {
-            byte[] data = JDM3U8FileCacheUtils.getBytesFromFile(file);
+            byte[] data = JDM3U8FileCacheBaseUtils.getBytesFromFile(file);
             if (null != data) {
                 return new String(data);
             }
@@ -272,7 +92,7 @@ public class JDM3U8FileCacheUtils {
     public static String getM3U8FileContent(String targetDir, long movieId, int movie_num_index) {
         File file = JDM3U8FileCacheUtils.getM3u8File(targetDir, movieId, movie_num_index);
         if (null != file) {
-            byte[] data = JDM3U8FileCacheUtils.getBytesFromFile(file);
+            byte[] data = JDM3U8FileCacheBaseUtils.getBytesFromFile(file);
             if (null != data) {
                 return new String(data);
             }
@@ -282,17 +102,17 @@ public class JDM3U8FileCacheUtils {
 
     public static void saveM3U8TopFile(String targetDir, long movieId, int movie_num_index, String content) {
         File file = getM3u8TopFile(targetDir, movieId, movie_num_index);
-        writeFile(file.getAbsolutePath(), content, false);
+        JDM3U8FileCacheBaseUtils.writeFile(file.getAbsolutePath(), content, false);
     }
 
     public static void saveM3U8File(String targetDir, long movieId, int movie_num_index, String content) {
         File file = getM3u8File(targetDir, movieId, movie_num_index);
-        writeFile(file.getAbsolutePath(), content, false);
+        JDM3U8FileCacheBaseUtils.writeFile(file.getAbsolutePath(), content, false);
     }
 
     public static void saveM3U8LocalFile(String targetDir, long movieId, int movie_num_index, String content) {
         File file = getM3u8LocalFile(targetDir, movieId, movie_num_index);
-        writeFile(file.getAbsolutePath(), content, false);
+        JDM3U8FileCacheBaseUtils.writeFile(file.getAbsolutePath(), content, false);
     }
 
     public static File getTsFile(String targetDir, long movieId, int movie_num_index, String tsFileName) {
@@ -330,26 +150,12 @@ public class JDM3U8FileCacheUtils {
         }
     }
 
-    //读取文件的每一行内容并存储为List<String>
-    public static List<String> fileContentToStrList(File file) {
-        BufferedReader in = null;
-        try {
-            List<String> dataList = new ArrayList<>();
-            InputStream inputStream = new FileInputStream(file);
-            in = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
-            String line;
-            while ((line = in.readLine()) != null) {
-                if (!TextUtils.isEmpty(line)) {
-                    dataList.add(line);
-                }
-            }
-            return dataList;
-        } catch (Exception e) {
-            e.printStackTrace();
-        } finally {
-            JDM3U8CloseUtils.close(in);
-        }
-        return null;
+    public static void clearInfoForFile(File file) {
+        JDM3U8FileCacheBaseUtils.clearInfoForFile(file);
     }
 
+    //读取文件的每一行内容并存储为List<String>
+    public static List<String> fileContentToStrList(File file) {
+        return JDM3U8FileCacheBaseUtils.fileContentToStrList(file);
+    }
 }
