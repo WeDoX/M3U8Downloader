@@ -6,17 +6,17 @@ import android.text.TextUtils;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.onedream.jdm3u8downloader.base.JDM3U8BaseDownloader;
-import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
-import com.onedream.jdm3u8downloader.bean.JDM3U8SingleRateUrlBean;
-import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
-import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
-import com.onedream.jdm3u8downloader.convert.JDM3U8ModelConvert;
-import com.onedream.jdm3u8downloader.download_ts_file.JDM3U8TsFileDownloadTask;
-import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
-import com.onedream.jdm3u8downloader.file_local_storage_manager.JDM3U8FileLocalStorageManager;
-import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
-import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
+import com.onedream.jdm3u8downloader.core.JDM3U8BaseDownloader;
+import com.onedream.jdm3u8downloader.core.bean.JDDownloadQueue;
+import com.onedream.jdm3u8downloader.core.bean.JDM3U8SingleRateUrlBean;
+import com.onedream.jdm3u8downloader.core.bean.JDM3U8TsDownloadUrlBean;
+import com.onedream.jdm3u8downloader.core.bean.state.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.ability.model_converter.JDM3U8BaseModelConverter;
+import com.onedream.jdm3u8downloader.core.download_ts_file.JDM3U8TsFileDownloadTask;
+import com.onedream.jdm3u8downloader.ability.file_downloader.JDM3U8FileAbstractDownloader;
+import com.onedream.jdm3u8downloader.ability.file_local_storage_manager.JDM3U8FileLocalStorageManager;
+import com.onedream.jdm3u8downloader.core.listener.JDM3U8DownloaderContract;
+import com.onedream.jdm3u8downloader.core.utils.JDM3U8LogHelper;
 
 import java.util.List;
 
@@ -24,18 +24,18 @@ import java.util.List;
  * @author jdallen
  * @since 2022/12/15
  */
-public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
+class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
 
     private final JDDownloadQueue downloadQueue;
     private final JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener;
     private final JDM3U8FileAbstractDownloader fileDownloader;
-    private final JDM3U8ModelConvert modelConvert;
+    private final JDM3U8BaseModelConverter modelConvert;
     private final JDM3U8FileLocalStorageManager fileLocalStorageManager;
 
     public JDM3U8RealDownloader(JDDownloadQueue downloadQueue,
                                 @NonNull JDM3U8DownloaderContract.JDM3U8DownloadBaseListener getM3U8FileListener,
                                 JDM3U8FileAbstractDownloader fileDownloader,
-                                @NonNull JDM3U8ModelConvert modelConvert,
+                                @NonNull JDM3U8BaseModelConverter modelConvert,
                                 @NonNull JDM3U8FileLocalStorageManager fileLocalStorageManager) {
         this.downloadQueue = downloadQueue;
         this.getM3U8FileListener = getM3U8FileListener;
@@ -46,7 +46,7 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
 
 
     @Override
-    public void getM3U8MultiRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener) {
+    public void downloadM3U8MultiRateFileContent(String urlPath, @NonNull final JDM3U8DownloaderContract.GetM3U8SingleRateContentListener baseDownloadListener) {
         //判断本地是否已经有该多码率文件
         List<String> fileContentList = fileLocalStorageManager.getM3u8MultiRateFileContent(downloadQueue);
         if (null != fileContentList && fileContentList.size() > 0) {
@@ -59,12 +59,12 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
 
 
     @Override
-    public JDM3U8SingleRateUrlBean getM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList) {
-        return modelConvert.convertM3U8SingleRateUrlBean(m3u8MultiRateFileDownloadUrl, dataList);
+    public JDM3U8SingleRateUrlBean covertToM3U8SingleRateUrlBean(String m3u8MultiRateFileDownloadUrl, List<String> dataList) {
+        return modelConvert.covertToM3U8SingleRateUrlBean(m3u8MultiRateFileDownloadUrl, dataList);
     }
 
     @Override
-    public void getM3U8SingleRateFileContent(JDM3U8SingleRateUrlBean m3u8FileUrlBean, @NonNull final JDM3U8DownloaderContract.BaseDownloadListener baseDownloadListener) {
+    public void downloadM3U8SingleRateFileContent(JDM3U8SingleRateUrlBean m3u8FileUrlBean, @NonNull final JDM3U8DownloaderContract.BaseDownloadListener baseDownloadListener) {
         //判断本地是否已经有该单码率文件
         String m3u8Content = fileLocalStorageManager.getM3U8SingleRateFileContent(downloadQueue);
         if (!TextUtils.isEmpty(m3u8Content)) {
@@ -75,18 +75,14 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
         fileDownloader.downloadM3U8SingleRateFileContent(m3u8FileUrlBean.getM3u8FileDownloadUrl(), baseDownloadListener);
     }
 
+
     @Override
-    public List<String> getTsFileDownloadShortUrlList(String M3U8SingleRateFileContent) {
-        return modelConvert.convertTsFileDownloadShortUrlList(M3U8SingleRateFileContent);
+    public List<JDM3U8TsDownloadUrlBean> convertToM3U8TsDownloadUrlBeanList(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String M3U8SingleRateFileContent) {
+        return modelConvert.convertToM3U8TsDownloadUrlBeanList(m3U8SingleRateFileDownloadUrlBean, M3U8SingleRateFileContent);
     }
 
     @Override
-    public JDM3U8TsBean getJDM3U8TsBean(JDM3U8SingleRateUrlBean m3U8SingleRateFileDownloadUrlBean, String tsFileUrl) {
-        return modelConvert.convertM3U8TsBean(m3U8SingleRateFileDownloadUrlBean, tsFileUrl);
-    }
-
-    @Override
-    public void downloadM3U8Ts(List<JDM3U8TsBean> tsUrlPathList, @Nullable JDM3U8DownloaderContract.DownloadStateCallback downloadStateCallback, JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener) {
+    public void downloadM3U8AllTsFile(List<JDM3U8TsDownloadUrlBean> tsUrlPathList, @Nullable JDM3U8DownloaderContract.DownloadStateCallback downloadStateCallback, JDM3U8DownloaderContract.JDM3U8DownloadFullSuccessListener jdm3U8DownloadFullSuccessListener) {
         //
         downloadQueue.setState(JDDownloadQueueState.STATE_DOWNLOAD_ING);
         //
@@ -101,7 +97,7 @@ public class JDM3U8RealDownloader extends JDM3U8BaseDownloader {
     }
 
     @Override
-    public void saveLocalM3U8SingleRate(String oldString) {
+    public void saveLocalM3U8SingleRateFile(String oldString) {
         fileLocalStorageManager.saveLocalM3U8SingleRate(downloadQueue, oldString);
     }
 

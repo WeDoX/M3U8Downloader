@@ -7,11 +7,11 @@ import android.widget.TextView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.onedream.jdm3u8downloader.JDM3U8Downloader;
-import com.onedream.jdm3u8downloader.bean.JDDownloadQueue;
-import com.onedream.jdm3u8downloader.bean.state.JDDownloadQueueState;
-import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
-import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
-import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
+import com.onedream.jdm3u8downloader.core.bean.JDDownloadQueue;
+import com.onedream.jdm3u8downloader.core.bean.state.JDDownloadQueueState;
+import com.onedream.jdm3u8downloader.core.listener.JDM3U8DownloaderContract;
+import com.onedream.jdm3u8downloader.core.utils.JDM3U8FileCacheUtils;
+import com.onedream.jdm3u8downloader.core.utils.JDM3U8LogHelper;
 import com.onedream.m3u8downloader.okhttp_file_downloader.OkHttpFileDownloaderFactory;
 
 import java.io.File;

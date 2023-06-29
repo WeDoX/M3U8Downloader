@@ -1,6 +1,6 @@
 package com.onedream.m3u8downloader.okhttp_file_downloader;
 
-import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloaderFactory;
+import com.onedream.jdm3u8downloader.ability.file_downloader.JDM3U8FileAbstractDownloaderFactory;
 
 /**
  * 创建{@link OkHttpFileDownloader}的工厂类

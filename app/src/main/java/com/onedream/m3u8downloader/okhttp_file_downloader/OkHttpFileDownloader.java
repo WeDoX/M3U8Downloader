@@ -4,13 +4,13 @@ import android.os.ConditionVariable;
 
 import androidx.annotation.NonNull;
 
-import com.onedream.jdm3u8downloader.bean.JDM3U8TsBean;
-import com.onedream.jdm3u8downloader.bean.state.JDM3U8DownloadHintMessage;
-import com.onedream.jdm3u8downloader.bean.state.JDM3U8TsDownloadState;
-import com.onedream.jdm3u8downloader.file_downloader.JDM3U8FileAbstractDownloader;
-import com.onedream.jdm3u8downloader.listener.JDM3U8DownloaderContract;
-import com.onedream.jdm3u8downloader.utils.JDM3U8FileCacheUtils;
-import com.onedream.jdm3u8downloader.utils.JDM3U8LogHelper;
+import com.onedream.jdm3u8downloader.core.bean.JDM3U8TsDownloadUrlBean;
+import com.onedream.jdm3u8downloader.core.bean.state.JDM3U8DownloadHintMessage;
+import com.onedream.jdm3u8downloader.core.bean.state.JDM3U8TsDownloadState;
+import com.onedream.jdm3u8downloader.ability.file_downloader.JDM3U8FileAbstractDownloader;
+import com.onedream.jdm3u8downloader.core.listener.JDM3U8DownloaderContract;
+import com.onedream.jdm3u8downloader.core.utils.JDM3U8FileCacheUtils;
+import com.onedream.jdm3u8downloader.core.utils.JDM3U8LogHelper;
 import com.zhy.http.okhttp.OkHttpUtils;
 import com.zhy.http.okhttp.callback.StringCallback;
 
@@ -79,7 +79,7 @@ public class OkHttpFileDownloader extends JDM3U8FileAbstractDownloader {
     }
 
     @Override
-    public int downLoadTsFile(JDM3U8TsBean m3U8TsBean, final File tempSaveFile) {
+    public int downLoadTsFile(JDM3U8TsDownloadUrlBean m3U8TsBean, final File tempSaveFile) {
         final int[] result = {JDM3U8TsDownloadState.DOWNLOAD_TS_FILE_DEFAULT};
         final ConditionVariable conditionVariable = new ConditionVariable();
         OkHttpUtils.get()
