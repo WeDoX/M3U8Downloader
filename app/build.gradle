@@ -27,8 +27,8 @@ dependencies {
     androidTestImplementation 'androidx.test.ext:junit:1.1.0'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.1.1'
     //
-    implementation project(':jdm3u8downloader')
-//    implementation 'com.github.WeDox:M3U8Downloader:2.0.4'
+//    implementation project(':jdm3u8downloader')
+    implementation 'com.github.WeDox:M3U8Downloader:2.0.5'
     //
     implementation 'com.zhy:okhttputils:2.6.2'
     implementation 'com.squareup.okhttp3:okhttp:3.2.0'
