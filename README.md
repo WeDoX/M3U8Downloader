@@ -1,5 +1,9 @@
 # M3U8Downloader [![](https://jitpack.io/v/WeDox/M3U8Downloader.svg)](https://jitpack.io/#WeDox/M3U8Downloader)
 m3u8视频文件下载器（生成支持供本地播放的m3u8文件）
+
+
+<a href="https://www.profitablecpmrate.com/g137c2d8a?key=e8465c36ea61437d3200f0ba575f1195" target="_blank" >觉得对你有帮助的话，看广告支持我</a>
+
 #### How to use?
 Step 0.Add it in your root build.gradle at the end of repositories:
 ~~~~~~~~~
